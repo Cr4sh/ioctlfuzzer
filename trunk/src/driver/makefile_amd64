@@ -4,7 +4,7 @@ ALL: $(OUTNAME).sys
 
 CC = cl.exe
 
-CFLAGS = /nologo -I".\src" -I"$(DDK_INC_PATH)" -I"$(CRT_INC_PATH)" -DDBGMSG_FULL -DDBGMSG -DDBGPIPE -D_AMD64_=1 /Gz /Zp8 /c
+CFLAGS = /nologo -I".\src" -I"$(DDK_INC_PATH)" -I"$(CRT_INC_PATH)" -DDBGMSG_FULL -DDBGMSG -DDBGPIPE -D_AMD64_=1 /Gz /GS- /c
 
 AM = ml64.exe
 
@@ -17,10 +17,10 @@ include makefile.inc
 
 LN = link.exe
 
-LFLAGS = /LIBPATH:$(DDK_LIB_PATH)\..\amd64 /LIBPATH:$(CRT_LIB_PATH)\..\amd64 /OPT:REF /OPT:ICF /INCREMENTAL:NO /DEBUG /DEBUGTYPE:CV /OPT:nowin98 /STACK:0x40000,0x1000 /DRIVER /BASE:0x10000 /ALIGN:0x80 /SUBSYSTEM:native /ENTRY:DriverEntry /out:../$(OUTNAME).sys
+LFLAGS = /LIBPATH:$(DDK_LIB_PATH)\..\amd64 /LIBPATH:$(CRT_LIB_PATH)\..\amd64 /OPT:REF /OPT:ICF /INCREMENTAL:NO /DEBUG /DEBUGTYPE:CV /STACK:0x40000,0x1000 /DRIVER /BASE:0x10000 /ALIGN:0x80 /SUBSYSTEM:native /ENTRY:DriverEntry /OUT:..\$(OUTNAME).sys
 
 $(OUTNAME).sys: $(LOBJS)        
-    $(LN) $(LFLAGS) $(LOBJS) $(LLIBS) BufferOverflowK.lib
+    $(LN) $(LFLAGS) $(LOBJS) $(LLIBS)
 
 clean:
      @del *.obj 

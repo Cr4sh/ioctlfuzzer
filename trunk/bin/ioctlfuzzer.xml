@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="windows-1251" ?> 
+<cfg>
+
+  <!-- Data generation mode for fuzzing (dwords/random). --> 
+  <fuzzing_type>dwords</fuzzing_type>
+
+  <!-- Path to log file. --> 
+  <log_file>C:\ioctls.txt</log_file> 
+
+  <!--  If true, hex dumps of IOCTL buffers will be logged. --> 
+  <hex_dump>false</hex_dump> 
+
+  <!-- If true, will print logging output to console. --> 
+  <log_requests>true</log_requests> 
+
+  <!-- If true, will print logging output to kernel debugger. -->
+  <debug_log_requests>true</debug_log_requests> 
+
+  <!-- If true, will fuzz IOCTLs (false - only logging). -->
+  <fuze_requests>true</fuze_requests> 
+
+  <!-- If true, will also randomly modify fuzzed IRP's input buffer size. -->
+  <fuze_size>true</fuze_size> 
+
+  <!-- If true - malformed IOCTLs will sending from fuzzer process. -->
+  <fair_fuzzing>true</fair_fuzzing>
+
+  <!-- 
+
+      IOCTLs "allow" list.
+   
+      The fuzzer will process (i.e. log and/or fuzz) any IOCTL request 
+      containing at least one parameter from the <allow> list.
+   
+      If the list is empty, each IRP will be processed.
+  --> 
+
+  <allow>
+    <!-- IOCTL request destination driver name. --> 
+    <drivers>
+    </drivers>
+    
+    <!-- IOCTL request destination device name. -->
+    <devices>
+    </devices>
+    
+    <!-- IOCTL request Control Code. --> 
+    <ioctls>
+    </ioctls>
+    
+    <!-- IOCTL request sender process file path/name. -->
+    <processes>
+    </processes>
+  </allow>
+
+  <!-- 
+      IOCTLs "deny" list.
+      Can be empty.
+  --> 
+  <deny>
+    <!-- 
+        "deny" list is identical in structure to "allow" list.
+    --> 
+
+    <!-- Don't fuze default Windows drivers. --> 
+    <drivers>
+      <entry>tcpip.sys</entry>
+      <entry>afd.sys</entry>
+      <entry>NDIS.sys</entry>
+      <entry>fltMgr.sys</entry>
+      <entry>ipsec.sys</entry>
+      <entry>mrxsmb.sys</entry>
+      <entry>KsecDD.sys</entry>
+      <entry>netbios.sys</entry>
+      <entry>nsiproxy.sys</entry>
+    </drivers>
+  </deny>
+</cfg>

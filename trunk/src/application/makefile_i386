@@ -1,0 +1,22 @@
+OUTNAME = ioctlfuzzer
+
+ALL: $(OUTNAME).exe
+
+CC = cl.exe
+
+CFLAGS = /nologo -I".\src" -I"$(SDK_INC_PATH)" -I"$(CRT_INC_PATH)" -DDBG -D_X86_=1 /Gz /c
+
+include makefile.inc
+
+LN = link.exe
+
+LFLAGS = /LIBPATH:$(SDK_LIB_PATH)\..\i386 /LIBPATH:$(CRT_LIB_PATH)\..\i386 /OPT:REF /OPT:ICF /INCREMENTAL:NO /DEBUG /DEBUGTYPE:CV /OPT:nowin98 /SUBSYSTEM:CONSOLE /out:..\..\bin\$(OUTNAME).exe
+
+RC = rc.exe
+
+$(OUTNAME).exe: $(LOBJS)
+    $(RC) -I"$(MFC_INC_PATH)" -D_X86_ -DDBG ioctlfuzzer.rc
+    $(LN) $(LFLAGS) $(LOBJS) $(LLIBS) ../dbgsdk/lib/i386/dbghelp.lib ioctlfuzzer.RES
+    
+clean:
+    @del *.obj 

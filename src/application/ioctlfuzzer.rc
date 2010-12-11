@@ -1,0 +1,52 @@
+#include "afxres.h"
+
+#ifdef _X86_
+DRIVER BINRES "../driver_i386.sys"
+#elif _AMD64_
+DRIVER BINRES "../driver_amd64.sys"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1 RT_MANIFEST "default.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041904b0"
+        BEGIN
+            VALUE "CompanyName", "eSage Lab"
+            VALUE "FileDescription", "IOCTL fuzzer for kernel drivers"
+            VALUE "FileVersion", "1, 2, 0, 0"
+            VALUE "InternalName", "ioctlfuzzer.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2010"
+            VALUE "OriginalFilename", "ioctlfuzzer.exe"
+            VALUE "ProductName", "IOCTLFuzzer"
+            VALUE "ProductVersion", "1, 2, 0, 0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x419, 1200
+    END
+END

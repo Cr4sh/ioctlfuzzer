@@ -67,6 +67,7 @@ extern PIOCTL_FILTER f_deny_head;
 extern PIOCTL_FILTER f_deny_end;
 
 extern "C" PUSHORT NtBuildNumber;
+extern "C" NTSTATUS NTAPI DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
 //--------------------------------------------------------------------------------------
 ULONG GetPrevModeOffset(void)
 {
@@ -956,9 +957,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     KeDelayExecutionThread(KernelMode, FALSE, &Timeout);
 }
 //--------------------------------------------------------------------------------------
-NTSTATUS DriverEntry(
-    PDRIVER_OBJECT  DriverObject,
-    PUNICODE_STRING RegistryPath)
+NTSTATUS NTAPI DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 {    
     DbgInit();
     DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): '%wZ' "IFMT"\n", RegistryPath, KernelGetModuleBase("ioctlfuzzer.exe"));    

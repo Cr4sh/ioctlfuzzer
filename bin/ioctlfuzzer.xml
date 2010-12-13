@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="windows-1251" ?> 
 <cfg>
 
-  <!-- Data generation mode for fuzzing (dwords/random). --> 
+  <!-- 
+      Data generation mode for fuzzing:
+      random - Fills input buffer with the random data.
+      dwords - Change each dword of input buffer by single 
+               iteration with incorrect address constant.
+  --> 
   <fuzzing_type>dwords</fuzzing_type>
 
   <!-- Path to log file. --> 
@@ -22,8 +27,8 @@
   <!-- If true, will also randomly modify fuzzed IRP's input buffer size. -->
   <fuze_size>true</fuze_size> 
 
-  <!-- If true - malformed IOCTLs will sending from fuzzer process. -->
-  <fair_fuzzing>true</fair_fuzzing>
+  <!-- If true - malformed IOCTLs will sending in context of ioctlfuzzer.exe process. -->
+  <fair_fuzzing>false</fair_fuzzing>
 
   <!-- 
 
@@ -62,7 +67,7 @@
         "deny" list is identical in structure to "allow" list.
     --> 
 
-    <!-- Don't fuze default Windows drivers. --> 
+    <!-- Don't fuzz default Windows drivers. --> 
     <drivers>
       <entry>tcpip.sys</entry>
       <entry>afd.sys</entry>

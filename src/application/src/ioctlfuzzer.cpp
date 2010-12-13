@@ -279,7 +279,7 @@ IXMLDOMNode *LoadXml(PWSTR lpwcData)
         goto end;
     }
 
-    // если xml загружен, получаем список корневых узлов
+    // get root nodes from the xml
     IXMLDOMNodeList *pIDOMRootNodeList;    
     hr = pXMLDoc->get_childNodes(&pIDOMRootNodeList);
     if (SUCCEEDED(hr))
@@ -300,8 +300,7 @@ end:
 
     if (!bOk)
     {
-        // произошла ошибка
-        // освобождаем дескриптор докуммента
+        // some error occurs
         pXMLDoc->Release();
     }
 
@@ -863,7 +862,31 @@ int _tmain(int argc, _TCHAR* argv[])
             else if (!lstrcmp(argv[i], "--uninstall"))
             {
                 // uninstall service/driver and exit
-                bUninstall = TRUE;
+                DrvServiceStop(SERVICE_NAME);
+
+                if (DrvServiceRemove(SERVICE_NAME))
+                {
+                    DeleteFile(szDriverFileName);
+
+                    MessageBox(
+                        0, 
+                        "IOCTL Fuzzer kernel driver has been uninstalled", 
+                        "Uninstall", 
+                        MB_ICONINFORMATION
+                    );
+                }
+                else
+                {
+                    MessageBox(
+                        0, 
+                        "Error while deleting IOCTL Fuzzer kernel driver service.\n"
+                        "See program log for details.", 
+                        "Uninstall", 
+                        MB_ICONERROR
+                    );
+                }
+
+                ExitProcess(0);
             }
             else if (!lstrcmp(argv[i], "--exceptions"))
             {
@@ -872,7 +895,7 @@ int _tmain(int argc, _TCHAR* argv[])
             }
             else if (!lstrcmp(argv[i], "--noioctls"))
             {
-                // log exceptions
+                // don't log IOCTLs
                 m_bSkipIoctls = TRUE;
             }
             else if (!lstrcmp(argv[i], "--config") && i < argc - 1)

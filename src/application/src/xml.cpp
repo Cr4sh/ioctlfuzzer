@@ -1,14 +1,5 @@
 #include "stdafx.h"
 //--------------------------------------------------------------------------------------
-/** 
- * получение xml-узла из списка по его имени
- * @param NodeName имя искомого узла
- * @param pIDOMNodeList дескриптор списка
- * @return дескриптор нужного узла, или NULL в случае неудачи
- * @see ConfGetNodeByName() 
- * @see ConfGetNodeText() 
- * @see ConfGetTextByName()
- */
 IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOMNodeList)
 {    
     IXMLDOMNode *Ret = NULL;
@@ -93,15 +84,6 @@ IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOM
     return NULL;
 }
 //--------------------------------------------------------------------------------------
-/** 
- * получение подузла по его имени
- * @param NodeName имя искомого узла
- * @param pIDOMNode дескриптор родительского узла
- * @return дескриптор нужного узла, или NULL в случае неудачи
- * @see ConfGetListNodeByName()  
- * @see ConfGetNodeText() 
- * @see ConfGetTextByName()
- */
 IXMLDOMNode * WINAPI ConfGetNodeByName(BSTR NodeName, IXMLDOMNode *pIDOMNode)
 {
     IXMLDOMNode *pIDOMRetNode = NULL;
@@ -135,15 +117,6 @@ IXMLDOMNode * WINAPI ConfGetNodeByName(BSTR NodeName, IXMLDOMNode *pIDOMNode)
     return pIDOMRetNode;
 } 
 //--------------------------------------------------------------------------------------
-/** 
- * получение значения узла
- * @param pIDOMNode дескриптор узла
- * @param str адресс unicode-строки, в которую будет записано значение
- * @return TRUE если всё ОК, FALSE в случае ошибки
- * @see ConfGetListNodeByName() 
- * @see ConfGetNodeByName() 
- * @see ConfGetTextByName()
- */
 BOOL WINAPI ConfGetNodeTextW(IXMLDOMNode *pIDOMNode, PWSTR *str)
 {
     BOOL bRet = FALSE;
@@ -208,15 +181,6 @@ BOOL WINAPI ConfGetNodeTextW(IXMLDOMNode *pIDOMNode, PWSTR *str)
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-/** 
- * получение значения узла
- * @param pIDOMNode дескриптор узла
- * @param str адресс unicode-строки, в которую будет записано значение
- * @return TRUE если всё ОК, FALSE в случае ошибки
- * @see ConfGetListNodeByName() 
- * @see ConfGetNodeByName() 
- * @see ConfGetTextByName()
- */
 BOOL WINAPI ConfGetNodeTextA(IXMLDOMNode *pIDOMNode, PCHAR *str)
 {
     BOOL bRet = FALSE;
@@ -256,18 +220,6 @@ BOOL WINAPI ConfGetNodeTextA(IXMLDOMNode *pIDOMNode, PCHAR *str)
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-/** 
- * получение значения подузла по его имени
- * @param pIDOMNode дескриптор родительского узла
- * @param name имя дочернего узла, значение которого необходимо получить
- * @param val адресс указателя на unicode-строку, в которую будет записано значение
- * @return TRUE если всё ОК, FALSE в случае ошибки
- * @see ConfGetListNodeByNameA() 
- * @see ConfGetListNodeByName() 
- * @see ConfGetNodeByName() 
- * @see ConfGetNodeText() 
- * @see ConfGetTextByName()
- */
 BOOL WINAPI ConfAllocGetTextByNameW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *value)
 {
     BOOL bRet = FALSE;
@@ -291,18 +243,6 @@ BOOL WINAPI ConfAllocGetTextByNameW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *v
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-/** 
- * получение значения подузла по его имени
- * @param pIDOMNode дескриптор родительского узла
- * @param name имя дочернего узла, значение которого необходимо получить
- * @param val адресс указателя на unicode-строку, в которую будет записано значение
- * @return TRUE если всё ОК, FALSE в случае ошибки
- * @see ConfGetListNodeByNameW() 
- * @see ConfGetListNodeByName() 
- * @see ConfGetNodeByName() 
- * @see ConfGetNodeText() 
- * @see ConfGetTextByName()
- */
 BOOL WINAPI ConfAllocGetTextByNameA(IXMLDOMNode *pIDOMNode, PWSTR name, PCHAR *value)
 {
     BOOL bRet = FALSE;

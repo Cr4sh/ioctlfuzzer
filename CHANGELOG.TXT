@@ -1,0 +1,18 @@
+
+Version 1.2:
+- Windows 7 support
+- Full support of 64-bit versions of Windows
+- Exceptions monitoring
+- "Fair Fuzzing" feature
+- Different data generation modes
+- Boot fuzzing (during OS initialization)
+
+
+Version 1.1:
+- XML configuration file support
+- IOCTL requests logging into the text file
+- Some bugfixes
+
+Version 1.0:
+- Initial release
+

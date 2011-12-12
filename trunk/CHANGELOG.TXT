@@ -1,8 +1,8 @@
 Version 1.3:
 
-- GUI for fuzzing/monitoring settings management, see GUI.png.
+- GUI for fuzzing/monitoring settings management.
 
-- Attack surface analysis feature: print list of drivers, devices and their information (security settings, number of - catched IOCTL requests, driver file product/vendor information, opened handles for devices), see attack-surface-analysis.png and attack-surface-analysis_NT6.1_x86.log.
+- Attack surface analysis feature: print list of drivers, devices and their information (security settings, number of - catched IOCTL requests, driver file product/vendor information, opened handles for devices), see log file example in attack-surface-analysis_NT6.1_x86.log.
 
 - Integration with Kernel Debugger Communicatioin Engine (https://github.com/Cr4sh/DbgCb). Now IOCTL Fuzzer can execute 
 

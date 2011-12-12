@@ -1,18 +1,33 @@
+Version 1.3:
+
+- GUI for fuzzing/monitoring settings management, see GUI.png.
+
+- Attack surface analysis feature: print list of drivers, devices and their information (security settings, number of - catched IOCTL requests, driver file product/vendor information, opened handles for devices), see attack-surface-analysis.png and attack-surface-analysis_NT6.1_x86.log.
+
+- Integration with Kernel Debugger Communicatioin Engine (https://github.com/Cr4sh/DbgCb). Now IOCTL Fuzzer can execute 
+
+- any commands in remote kernel debugger for IOCTL requests parameters of which were specified in the file config file.
+
+- Some fuzzing improvements.
+
 
 Version 1.2:
-- Windows 7 support
-- Full support of 64-bit versions of Windows
-- Exceptions monitoring
-- "Fair Fuzzing" feature
-- Different data generation modes
-- Boot fuzzing (during OS initialization)
+
+- Windows 7 support.
+- Full support of 64-bit versions of Windows.
+- Exceptions monitoring.
+- "Fair Fuzzing" feature.
+- Different data generation modes.
+- Boot fuzzing (during OS initialization).
 
 
 Version 1.1:
-- XML configuration file support
-- IOCTL requests logging into the text file
-- Some bugfixes
+
+- XML configuration file support.
+- IOCTL requests logging into the text file.
+- Some bugfixes.
+
 
 Version 1.0:
-- Initial release
 
+- Initial release.

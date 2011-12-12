@@ -1,0 +1,13 @@
+
+!if "$(_BUILDARCH)"=="AMD64"
+TARGETNAME = ..\..\..\dbgcb_drv_x64
+!else
+TARGETNAME = ..\..\..\dbgcb_drv
+!endif
+
+TARGETTYPE = DRIVER
+
+SOURCES = \
+        dbgcb_stub.cpp \
+        dbgcb_drv.cpp
+

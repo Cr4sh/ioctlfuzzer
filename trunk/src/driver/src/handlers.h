@@ -37,3 +37,5 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
     PVOID OutputBuffer,
     ULONG OutputBufferLength
 );
+
+BOOLEAN ValidateUnicodeString(PUNICODE_STRING usStr);

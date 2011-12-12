@@ -1,5 +1,7 @@
 #include "stdafx.h"
 //--------------------------------------------------------------------------------------
+#ifndef _NTIFS_INCLUDED_
+
 typedef struct _ACE_HEADER 
 {
     UCHAR  AceType;
@@ -17,8 +19,6 @@ typedef struct _ACCESS_ALLOWED_ACE
 
 } ACCESS_ALLOWED_ACE;
 
-#ifndef __wtypes_h__
-
 typedef struct _SID 
 {
     UCHAR  Revision;
@@ -29,7 +29,7 @@ typedef struct _SID
 
 } SID, *PISID;
 
-#endif // __wtypes_h__
+#endif
 
 BOOLEAN SetObjectSecurityWorld(HANDLE hObject, ACCESS_MASK AccessMask)
 {

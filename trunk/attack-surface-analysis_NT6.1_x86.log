@@ -1,0 +1,1103 @@
+[00332] DbgInit(): Log file 'C:\bin\ioctlfuzzer.log' created
+[00332] PipeServerThread(): Listening on pipe '\\.\pipe\IOCTLfuzzer'
+[00332] [+] Changing console screen buffer height from 300 to 4096 lines
+[00332] IOCTL Fuzzer
+[00332] by Oleksiuk Dmytro (aka Cr4sh) :: dmitry@esagelab.com
+[00332] (c) 2011 Esage Lab :: http://www.esagelab.com/
+[00332] Program version: 1.3.0.0
+[00332] Creating service...
+[00332] Allready exists
+[00332] Starting service...
+[00332] Allready running
+[00332] Thread for kernel mode APC's created (ID: 39c)
+[00332] Opening '\\.\Global\IOCTLfuzzer'...
+[00332] [+] Collecting device objects information...
+[00332] NtOpenDirectoryObject() fails; status: 0xc0000022
+[00332] CollectDeviceObjectsInfo(): Error while opening directory "\UMDFCommunicationPorts"
+driver.cpp(935) : [+] IOCTLs log closed "\??\C:\ioctls.log"
+driver.cpp(709) : Error while opening "\clfs"; status: 0xc0000039
+driver.cpp(709) : Error while opening "\Device\0000009b"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008e"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000032"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000025"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000019"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000009c"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008f"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000033"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000026"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000009d"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000034"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000027"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000009e"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000035"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000028"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000036"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000029"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000050"; status: 0xc0000022
+driver.cpp(709) : Error while opening "\Device\00000037"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000a"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\Video3"; status: 0xc0000059
+driver.cpp(709) : Error while opening "\Device\00000051"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000038"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000b"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000052"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000039"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000c"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0000"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000053"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000001a"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000d"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\MPS"; status: 0xc0000022
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0001"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000060"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000054"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000001b"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000e"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\000000a0"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000061"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000055"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000001c"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000000f"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0010"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0003"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000062"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000056"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000001d"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0011"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000070"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000063"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000057"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000002a"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000001e"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\Http\ReqQueue"; status: 0xc000000d
+driver.cpp(709) : Error while opening "\Device\Http\Communication"; status: 0xc000000d
+driver.cpp(709) : Error while opening "\Device\000000a3"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0012"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000071"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000064"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000058"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000002b"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000001f"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0013"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000072"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000065"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000002c"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\Ide\PciIde0"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0020"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0014"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0007"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000073"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000066"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000003a"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000002d"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0021"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0015"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0008"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000080"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000074"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000067"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000003b"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000002e"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0022"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0016"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0009"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000081"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000075"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000068"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000003c"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000002f"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0030"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0023"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0017"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000082"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000076"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000069"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000003d"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NDMP7"; status: 0xc0000001
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0031"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0024"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0018"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000090"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000083"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000077"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0032"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0025"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0019"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000091"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000084"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000078"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000003f"; status: 0xc0000001
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0033"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0026"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000092"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000085"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000079"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0034"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0027"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000093"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000086"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005a"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\rspndr"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0035"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0028"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000094"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000087"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005b"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000004e"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0036"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0029"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000095"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000088"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005c"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0037"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000096"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000089"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005d"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0038"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000097"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006a"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005e"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\lltdio"; status: 0xc000000d
+driver.cpp(709) : Error while opening "\Device\NTPNP_PCI0039"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\00000098"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006b"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000005f"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\vmmemctl"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\WS2IFSL"; status: 0xc000000d
+driver.cpp(709) : Error while opening "\Device\00000099"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006c"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000010"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000007a"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006d"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000011"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000004"; status: 0xc0000010
+driver.cpp(709) : Error while opening "\Device\0000007b"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006e"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000012"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000007c"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000006f"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000013"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000007d"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000020"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000014"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008a"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000007e"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000021"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000015"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000008"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008b"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\0000007f"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000022"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000016"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000009"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008c"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000030"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000023"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000017"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000009a"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\0000008d"; status: 0xc0000002
+driver.cpp(709) : Error while opening "\Device\00000031"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000024"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\Device\00000018"; status: 0xc000000e
+driver.cpp(709) : Error while opening "\FileSystem\Filters\FltMgrMsg"; status: 0xc0000022
+[00332] [+] List of the devices and drivers
+[00332] 
+[00332] Parsing global IOCLs log "C:\ioctls.log"...
+[00332] [+] 32611 entries readed
+[00332] Process="smss.exe" PID=224 Handle=0x00000004 "\Device\HarddiskVolume1"
+[00332] Process="smss.exe" PID=224 Handle=0x0000000c "\Device\NamedPipe"
+[00332] Process="smss.exe" PID=224 Handle=0x00000010 "\Device\Mailslot"
+[00332] Process="csrss.exe" PID=324 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="csrss.exe" PID=324 Handle=0x000000d4 "\Device\KsecDD"
+[00332] Process="wininit.exe" PID=364 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="wininit.exe" PID=364 Handle=0x000000d4 "\Device\NamedPipe"
+[00332] Process="wininit.exe" PID=364 Handle=0x0000010c "\Device\KsecDD"
+[00332] Process="wininit.exe" PID=364 Handle=0x00000144 "\Device\Afd"
+[00332] Process="csrss.exe" PID=372 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="csrss.exe" PID=372 Handle=0x000000c8 "\Device\000000a2"
+[00332] Process="csrss.exe" PID=372 Handle=0x000000cc "\Device\00000048"
+[00332] Process="csrss.exe" PID=372 Handle=0x000000d0 "\Device\000000a1"
+[00332] Process="csrss.exe" PID=372 Handle=0x000000d4 "\Device\00000047"
+[00332] Process="csrss.exe" PID=372 Handle=0x000000f8 "\Device\KsecDD"
+[00332] Process="winlogon.exe" PID=408 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="winlogon.exe" PID=408 Handle=0x0000016c "\Device\KsecDD"
+[00332] Process="services.exe" PID=480 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="services.exe" PID=480 Handle=0x000000ec "\Device\NamedPipe"
+[00332] Process="services.exe" PID=480 Handle=0x000000f8 "\Device\KsecDD"
+[00332] Process="services.exe" PID=480 Handle=0x000002d0 "\Device\Afd"
+[00332] Process="lsass.exe" PID=492 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="lsass.exe" PID=492 Handle=0x0000009c "\Device\KsecDD"
+[00332] Process="lsass.exe" PID=492 Handle=0x00000358 "\Device\NamedPipe"
+[00332] Process="lsass.exe" PID=492 Handle=0x0000066c "\Device\Afd"
+[00332] Process="lsass.exe" PID=492 Handle=0x000006c4 "\Device\Nsi"
+[00332] Process="lsm.exe" PID=500 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="lsm.exe" PID=500 Handle=0x00000084 "\Device\KsecDD"
+[00332] Process="lsm.exe" PID=500 Handle=0x000000c4 "\Device\PcwDrv"
+[00332] Process="lsm.exe" PID=500 Handle=0x000001a8 "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=604 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=604 Handle=0x00000068 "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=604 Handle=0x00000280 "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=604 Handle=0x00000374 "\Device\PcwDrv"
+[00332] Process="svchost.exe" PID=668 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=668 Handle=0x00000080 "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=668 Handle=0x00000154 "\Device\Afd"
+[00332] Process="svchost.exe" PID=668 Handle=0x00000168 "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=716 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=716 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=716 Handle=0x00000124 "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=716 Handle=0x00000150 "\Device\Afd"
+[00332] Process="svchost.exe" PID=716 Handle=0x0000025c "\Device\NetBt_Wins_Export"
+[00332] Process="svchost.exe" PID=716 Handle=0x00000318 "\Device\Nsi"
+[00332] Process="svchost.exe" PID=836 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=836 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=836 Handle=0x00000124 "\Device\PcwDrv"
+[00332] Process="svchost.exe" PID=836 Handle=0x000001c8 "\Device\Mup"
+[00332] Process="svchost.exe" PID=836 Handle=0x00000378 "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=836 Handle=0x00000560 "\Device\WMIDataDevice"
+[00332] Process="svchost.exe" PID=836 Handle=0x0000063c "\Device\FileInfo"
+[00332] Process="svchost.exe" PID=888 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=888 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=888 Handle=0x00000320 "\Device\WMIDataDevice"
+[00332] Process="svchost.exe" PID=888 Handle=0x0000032c "\Device\PcwDrv"
+[00332] Process="svchost.exe" PID=888 Handle=0x000003bc "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=888 Handle=0x00000404 "\Device\Afd"
+[00332] Process="svchost.exe" PID=888 Handle=0x00000554 "\Device\Nsi"
+[00332] Process="svchost.exe" PID=888 Handle=0x000007fc "\Device\SrvAdmin"
+[00332] Process="svchost.exe" PID=888 Handle=0x000008d0 "\Device\LanmanServer"
+[00332] Process="svchost.exe" PID=888 Handle=0x000008d4 "\Device\Srv2"
+[00332] Process="svchost.exe" PID=968 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=968 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=968 Handle=0x000000d4 "\Device\Nsi"
+[00332] Process="svchost.exe" PID=1076 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=1076 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=1076 Handle=0x0000011c "\Device\Nsi"
+[00332] Process="svchost.exe" PID=1076 Handle=0x000001ac "\Device\Afd"
+[00332] Process="svchost.exe" PID=1076 Handle=0x0000020c "\Device\NamedPipe"
+[00332] Process="svchost.exe" PID=1076 Handle=0x00000210 "\Device\Mup"
+[00332] Process="svchost.exe" PID=1076 Handle=0x00000214 "\Device\LanmanDatagramReceiver"
+[00332] DuplicateHandle() ERROR 6
+[00332] Process="svchost.exe" PID=1076 Handle=0x0000045c "\Device\WMIDataDevice"
+[00332] Process="spoolsv.exe" PID=1196 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="spoolsv.exe" PID=1196 Handle=0x000000d8 "\Device\KsecDD"
+[00332] Process="spoolsv.exe" PID=1196 Handle=0x00000178 "\Device\Nsi"
+[00332] Process="spoolsv.exe" PID=1196 Handle=0x000001e4 "\Device\0000004a"
+[00332] Process="svchost.exe" PID=1228 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="svchost.exe" PID=1228 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="svchost.exe" PID=1228 Handle=0x000000e8 "\Device\WFP"
+[00332] Process="svchost.exe" PID=1228 Handle=0x000000f0 "\Device\NXTIPSEC"
+[00332] Process="svchost.exe" PID=1228 Handle=0x000000f4 "\Device\IPSECDOSP"
+[00332] Process="svchost.exe" PID=1228 Handle=0x000000f8 "\Device\WfpAle"
+[00332] Process="svchost.exe" PID=1228 Handle=0x00000144 "\Device\PcwDrv"
+[00332] Process="svchost.exe" PID=1228 Handle=0x00000214 "\Device\MPS"
+[00332] Process="svchost.exe" PID=1228 Handle=0x00000284 "\Device\Nsi"
+[00332] Process="vmtoolsd.exe" PID=1404 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="vmtoolsd.exe" PID=1404 Handle=0x0000019c "\Device\KsecDD"
+[00332] Process="vmtoolsd.exe" PID=1404 Handle=0x000001f4 "\Device\Nsi"
+[00332] Process="vmtoolsd.exe" PID=1404 Handle=0x00000344 "\Device\WMIDataDevice"
+[00332] Process="vmupgradehelper.exe" PID=1480 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="vmupgradehelper.exe" PID=1480 Handle=0x00000088 "\Device\KsecDD"
+[00332] Process="taskhost.exe" PID=1784 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="taskhost.exe" PID=1784 Handle=0x0000005c "\Device\KsecDD"
+[00332] Process="taskhost.exe" PID=1784 Handle=0x000000dc "\Device\Beep"
+[00332] Process="dwm.exe" PID=1860 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="explorer.exe" PID=1880 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="explorer.exe" PID=1880 Handle=0x0000012c "\Device\KsecDD"
+[00332] Process="explorer.exe" PID=1880 Handle=0x000001d8 "\Device\NamedPipe"
+[00332] Process="explorer.exe" PID=1880 Handle=0x00000594 "\Device\WMIDataDevice"
+[00332] Process="explorer.exe" PID=1880 Handle=0x00000890 "\Device\Nsi"
+[00332] Process="vmwaretray.exe" PID=248 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="vmwareuser.exe" PID=544 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="vmwareuser.exe" PID=544 Handle=0x000000bc "\Device\KsecDD"
+[00332] Process="wmiprvse.exe" PID=1400 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="wmiprvse.exe" PID=1400 Handle=0x000000a8 "\Device\KsecDD"
+[00332] Process="wmiprvse.exe" PID=1400 Handle=0x000001e4 "\Device\Nsi"
+[00332] Process="cmd.exe" PID=1844 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="conhost.exe" PID=288 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="conhost.exe" PID=288 Handle=0x0000008c "\Device\KsecDD"
+[00332] Process="ioctlfuzzer.exe" PID=332 Handle=0x00000008 "\Device\HarddiskVolume1"
+[00332] Process="ioctlfuzzer.exe" PID=332 Handle=0x00000084 "\Device\NamedPipe"
+[00332] Process="ioctlfuzzer.exe" PID=332 Handle=0x000000d8 "\Device\KsecDD"
+[00332] Process="ioctlfuzzer.exe" PID=332 Handle=0x000000e4 "\Device\IOCTLfuzzer"
+[00332] DRIVER: 0x85346a38 "\Driver\Wdf01000" 0 total calls
+[00332] Description: "Kernel Mode Driver Framework Runtime"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\Wdf01000.sys"
+[00332]       * 0x85349030 "\Device\KMDF0" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x853494e8 "\Driver\ACPI" 0 total calls
+[00332] Description: "ACPI Driver for NT"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\ACPI.sys"
+[00332]       * 0x861b28d8 "\Device\0000004f" Access: Everyone, 0 calls
+[00332]       * 0x8624aa68 "\Device\000000a2" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           00372 "csrss.exe"
+[00332]       * 0x8624ab90 "\Device\000000a1" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           00372 "csrss.exe"
+[00332]       * 0x8624ade0 "\Device\0000009f" Access: Everyone, 0 calls
+[00332]       * 0x8624b500 "\Device\000000a7" Access: Everyone, 0 calls
+[00332]       * 0x8624b628 "\Device\000000a6" Access: Everyone, 0 calls
+[00332]       * 0x8624b750 "\Device\000000a5" Access: Everyone, 0 calls
+[00332]       * 0x8624b878 "\Device\000000a4" Access: Restricted, 0 calls
+[00332]       * 0x866e0f08 "\Device\00000059" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x853d38a0 "\Driver\atapi" 0 total calls
+[00332] Description: "ATAPI IDE Miniport Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\atapi.sys"
+[00332]       * 0x853dc028 "\Device\Ide\IdePort0" Access: Restricted, 0 calls
+[00332]       * 0x86164028 "\Device\Ide\IdePort1" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x853f1da8 "\Driver\PnpManager" 0 total calls
+[00332]       * 0x853ea030 "\Device\00000002" Access: Restricted, 0 calls
+[00332]       * 0x853ee4e0 "\Device\00000001" Access: Restricted, 0 calls
+[00332]       * 0x853f65a0 "\Device\00000003" Access: Restricted, 0 calls
+[00332]       * 0x853f8980 "\Device\00000007" Access: Everyone, 0 calls
+[00332]       * 0x853f8c40 "\Device\00000006" Access: Restricted, 0 calls
+[00332]       * 0x853f8f00 "\Device\00000005" Access: Everyone, 0 calls
+[00332]       * 0x85402400 "\Device\00000040" Access: Restricted, 0 calls
+[00332]       * 0x85402980 "\Device\0000003e" Access: Restricted, 0 calls
+[00332]       * 0x85403030 "\Device\00000041" Access: Restricted, 0 calls
+[00332]       * 0x85403270 "\Device\00000046" Access: Everyone, 0 calls
+[00332]       * 0x85403530 "\Device\00000045" Access: Restricted, 0 calls
+[00332]       * 0x854037f0 "\Device\00000044" Access: Restricted, 0 calls
+[00332]       * 0x85403ab0 "\Device\00000043" Access: Restricted, 0 calls
+[00332]       * 0x85403d70 "\Device\00000042" Access: Restricted, 0 calls
+[00332]       * 0x85404400 "\Device\0000004b" Access: Everyone, 0 calls
+[00332]       * 0x854046c0 "\Device\0000004a" Access: Restricted, 0 calls
+[00332]         Opened by:
+[00332]           01196 "spoolsv.exe"
+[00332]       * 0x85404980 "\Device\00000049" Access: Everyone, 0 calls
+[00332]       * 0x85404c40 "\Device\00000048" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           00372 "csrss.exe"
+[00332]       * 0x85404f00 "\Device\00000047" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           00372 "csrss.exe"
+[00332]       * 0x85405030 "\Device\0000004c" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x85405508 "\Driver\WMIxWDM" 0 total calls
+[00332]       * 0x85405160 "\Device\WMIAdminDevice" Access: Restricted, 0 calls
+[00332]       * 0x85405288 "\Device\WMIDataDevice" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00836 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332]           01404 "vmtoolsd.exe"
+[00332]           01880 "explorer.exe"
+[00332] 
+[00332] DRIVER: 0x85405ca8 "\Driver\ACPI_HAL" 0 total calls
+[00332]       * 0x854058c0 "\Device\0000004d" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8541d1b8 "\Driver\mountmgr" 116 total calls
+[00332] Description: "Mount Point Manager"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\mountmgr.sys"
+[00332]       * 0x861496a8 "\Device\MountPointManager" Access: Everyone, 116 calls
+[00332] 
+[00332] DRIVER: 0x854611b8 "\Driver\LSI_SAS" 6 total calls
+[00332] Description: "LSI Fusion-MPT SAS Driver (StorPort)"
+[00332] Company: "LSI Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\lsi_sas.sys"
+[00332]       * 0x86153670 "\Device\000000a8" Access: Everyone, 6 calls
+[00332]       * 0x861b8920 "\Device\RaidPort0" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x85c781b8 "\FileSystem\RAW" 0 total calls
+[00332]       * 0x85414330 "\Device\RawCdRom" Access: Everyone, 0 calls
+[00332]       * 0x85c6d330 "\Device\RawTape" Access: Everyone, 0 calls
+[00332]       * 0x85c791b0 "\Device\RawDisk" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86112c90 "\Driver\Compbatt" 0 total calls
+[00332] Description: "Composite Battery Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\compbatt.sys"
+[00332]       * 0x8613e760 "\Device\CompositeBattery" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8612c670 "\Driver\Tcpip" 86 total calls
+[00332] Description: "TCP/IP Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\tcpip.sys"
+[00332]       * 0x86366e08 "\Device\WFP" Access: Open Error, 85 calls
+[00332]         Opened by:
+[00332]           01228 "svchost.exe"
+[00332]       * 0x86373d88 "\Device\NXTIPSEC" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           01228 "svchost.exe"
+[00332]       * 0x863745d0 "\Device\IPSECDOSP" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           01228 "svchost.exe"
+[00332]       * 0x863746f8 "\Device\WfpAle" Access: Open Error, 1 calls
+[00332]         Opened by:
+[00332]           01228 "svchost.exe"
+[00332]       * 0x86375570 "\Device\eQoS" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x8614b640 "\FileSystem\Ntfs" 0 total calls
+[00332] Description: "NT File System Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Ntfs.sys"
+[00332]       * 0x8617b460 "\Ntfs" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8614c648 "\Driver\CNG" 0 total calls
+[00332] Description: "Kernel Cryptography, Next Generation"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\cng.sys"
+[00332]       * 0x86122640 "\Device\CNG" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8614d648 "\Driver\pcw" 23 total calls
+[00332] Description: "Performance Counters for Windows Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\pcw.sys"
+[00332]       * 0x86123640 "\Device\PcwDrv" Access: Everyone, 23 calls
+[00332]         Opened by:
+[00332]           00500 "lsm.exe"
+[00332]           00604 "svchost.exe"
+[00332]           00836 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           01228 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x8614f648 "\FileSystem\Fs_Rec" 0 total calls
+[00332] Description: "File System Recognizer Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Fs_Rec.sys"
+[00332]       * 0x86125630 "\FileSystem\CdfsRecognizer" Access: Everyone, 0 calls
+[00332]       * 0x86126630 "\FileSystem\UdfsCdRomRecognizer" Access: Everyone, 0 calls
+[00332]       * 0x86127630 "\FileSystem\UdfsDiskRecognizer" Access: Everyone, 0 calls
+[00332]       * 0x86128630 "\FileSystem\FatDiskRecognizer" Access: Everyone, 0 calls
+[00332]       * 0x86129630 "\FileSystem\FatCdRomRecognizer" Access: Everyone, 0 calls
+[00332]       * 0x8612a630 "\FileSystem\ExFatRecognizer" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86151648 "\Driver\NDIS" 11 total calls
+[00332] Description: "NDIS 6.20 driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\ndis.sys"
+[00332]       * 0x86338d88 "\Device\Ndis" Access: Everyone, 11 calls
+[00332] 
+[00332] DRIVER: 0x86158640 "\Driver\KSecDD" 332 total calls
+[00332] Description: "Kernel Security Support Provider Interface"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\ksecdd.sys"
+[00332]       * 0x86121640 "\Device\KsecDD" Access: Everyone, 332 calls
+[00332]         Opened by:
+[00332]           00324 "csrss.exe"
+[00332]           00364 "wininit.exe"
+[00332]           00372 "csrss.exe"
+[00332]           00408 "winlogon.exe"
+[00332]           00480 "services.exe"
+[00332]           00492 "lsass.exe"
+[00332]           00500 "lsm.exe"
+[00332]           00604 "svchost.exe"
+[00332]           00668 "svchost.exe"
+[00332]           00716 "svchost.exe"
+[00332]           00836 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           00968 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332]           01196 "spoolsv.exe"
+[00332]           01228 "svchost.exe"
+[00332]           01404 "vmtoolsd.exe"
+[00332]           01480 "vmupgradehelper.exe"
+[00332]           01784 "taskhost.exe"
+[00332]           01880 "explorer.exe"
+[00332]           00544 "vmwareuser.exe"
+[00332]           01400 "wmiprvse.exe"
+[00332]           00288 "conhost.exe"
+[00332]           00332 "ioctlfuzzer.exe"
+[00332] 
+[00332] DRIVER: 0x861b1380 "\Driver\pci" 0 total calls
+[00332] Description: "NT Plug and Play PCI Enumerator"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\pci.sys"
+[00332]       * 0x85339030 "\Device\NTPNP_PCI0040" Access: Restricted, 0 calls
+[00332]       * 0x85339b58 "\Device\NTPNP_PCI0041" Access: Restricted, 0 calls
+[00332]       * 0x85d4d030 "\Device\NTPNP_PCI0042" Access: Restricted, 0 calls
+[00332]       * 0x861d8680 "\Device\NTPNP_PCI0002" Access: Everyone, 0 calls
+[00332]       * 0x861d9680 "\Device\NTPNP_PCI0005" Access: Everyone, 0 calls
+[00332]       * 0x861da030 "\Device\NTPNP_PCI0006" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x8620c920 "\FileSystem\srv2" 0 total calls
+[00332] Description: "Smb 2.0 Server driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\DRIVERS\srv2.sys"
+[00332]       * 0x8620c4f8 "\Device\Srv2" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00888 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x8620f3c8 "\Driver\flpydisk" 1 total calls
+[00332] Description: "Floppy Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\flpydisk.sys"
+[00332]       * 0x8621d030 "\Device\Floppy0" Access: Everyone, 1 calls
+[00332] 
+[00332] DRIVER: 0x8637f640 "\Driver\rdyboost" 1 total calls
+[00332] Description: "ReadyBoost Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\rdyboost.sys"
+[00332]       * 0x8638f030 "\Device\RdyBoost" Access: Everyone, 1 calls
+[00332] 
+[00332] DRIVER: 0x8638f448 "\FileSystem\Mup" 0 total calls
+[00332] Description: "Multiple UNC Provider Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\mup.sys"
+[00332]       * 0x8638e540 "\Device\Mup" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00836 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x8638f668 "\Driver\spldr" 0 total calls
+[00332] Description: "loader for security processor"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\spldr.sys"
+[00332]       * 0x8638f540 "\Device\SPDevice" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x863b1420 "\Driver\Disk" 2 total calls
+[00332] Description: "PnP Disk Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\disk.sys"
+[00332]       * 0x86384ac8 "\Device\Harddisk0\DR0" Access: Everyone, 2 calls
+[00332] 
+[00332] DRIVER: 0x863d4650 "\FileSystem\FileInfo" 3 total calls
+[00332] Description: "FileInfo Filter Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\fileinfo.sys"
+[00332]       * 0x86116640 "\Device\FileInfo" Access: Restricted, 3 calls
+[00332]         Opened by:
+[00332]           00836 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x863e6f38 "\Driver\partmgr" 0 total calls
+[00332] Description: "Partition Management Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\partmgr.sys"
+[00332]       * 0x8613d820 "\Device\PartmgrControl" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86445de8 "\FileSystem\rdbss" 0 total calls
+[00332] Description: "Redirected Drive Buffering SubSystem Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\rdbss.sys"
+[00332]       * 0x865e3558 "\Device\FsWrap" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86455190 "\Driver\blbdrive" 0 total calls
+[00332] Description: "BLB Drive Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\blbdrive.sys"
+[00332]       * 0x865fdd38 "\Device\BlbControl" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x864a81e0 "\Driver\kbdclass" 0 total calls
+[00332] Description: "Keyboard Class Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\kbdclass.sys"
+[00332]       * 0x865f7958 "\Device\KeyboardClass0" Access: Open Error, 0 calls
+[00332]       * 0x86682a60 "\Device\KeyboardClass1" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x864e2ea8 "\Driver\Psched" 0 total calls
+[00332] Description: "QoS Packet Scheduler"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\pacer.sys"
+[00332]       * 0x8659fe20 "\Device\Psched" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x864f4030 "\Driver\Beep" 10 total calls
+[00332] Description: "BEEP Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Beep.SYS"
+[00332]       * 0x864f4eb0 "\Device\Beep" Access: Everyone, 10 calls
+[00332]         Opened by:
+[00332]           01784 "taskhost.exe"
+[00332] 
+[00332] DRIVER: 0x86527900 "\Driver\TermDD" 0 total calls
+[00332] Description: "Remote Desktop Server Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\termdd.sys"
+[00332]       * 0x865c51c0 "\Device\RemoteVideo1" Access: Open Error, 0 calls
+[00332]       * 0x865c52f0 "\Device\RemoteVideo0" Access: Open Error, 0 calls
+[00332]       * 0x865c5420 "\Device\Termdd" Access: Open Error, 0 calls
+[00332]       * 0x865e3030 "\Device\RemoteVideo15" Access: Open Error, 0 calls
+[00332]       * 0x865e4030 "\Device\RemoteVideo2" Access: Open Error, 0 calls
+[00332]       * 0x865e41f0 "\Device\RemoteVideo14" Access: Open Error, 0 calls
+[00332]       * 0x865e4320 "\Device\RemoteVideo13" Access: Open Error, 0 calls
+[00332]       * 0x865e4450 "\Device\RemoteVideo12" Access: Open Error, 0 calls
+[00332]       * 0x865e4580 "\Device\RemoteVideo11" Access: Open Error, 0 calls
+[00332]       * 0x865e46b0 "\Device\RemoteVideo10" Access: Open Error, 0 calls
+[00332]       * 0x865e47e0 "\Device\RemoteVideo9" Access: Open Error, 0 calls
+[00332]       * 0x865e4910 "\Device\RemoteVideo8" Access: Open Error, 0 calls
+[00332]       * 0x865e4a40 "\Device\RemoteVideo7" Access: Open Error, 0 calls
+[00332]       * 0x865e4b70 "\Device\RemoteVideo6" Access: Open Error, 0 calls
+[00332]       * 0x865e4ca0 "\Device\RemoteVideo5" Access: Open Error, 0 calls
+[00332]       * 0x865e4dd0 "\Device\RemoteVideo4" Access: Open Error, 0 calls
+[00332]       * 0x865e4f00 "\Device\RemoteVideo3" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x865314b0 "\FileSystem\NetBIOS" 0 total calls
+[00332] Description: "NetBIOS interface driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\netbios.sys"
+[00332]       * 0x8659fc78 "\Device\Netbios" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86532428 "\FileSystem\vmhgfs" 6 total calls
+[00332] Description: "VMware HGFS File System Driver"
+[00332] Company: "VMware, Inc."
+[00332] File path: "C:\Windows\System32\DRIVERS\vmhgfs.sys"
+[00332]       * 0x865c65a8 "\Device\hgfsInternal" Access: Everyone, 6 calls
+[00332] 
+[00332] DRIVER: 0x86533800 "\FileSystem\Npfs" 0 total calls
+[00332] Description: "NPFS Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Npfs.SYS"
+[00332]       * 0x865a5030 "\Device\NamedPipe" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00224 "smss.exe"
+[00332]           00364 "wininit.exe"
+[00332]           00480 "services.exe"
+[00332]           00492 "lsass.exe"
+[00332]           00500 "lsm.exe"
+[00332]           00604 "svchost.exe"
+[00332]           00668 "svchost.exe"
+[00332]           00716 "svchost.exe"
+[00332]           00836 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332]           01880 "explorer.exe"
+[00332]           00332 "ioctlfuzzer.exe"
+[00332] 
+[00332] DRIVER: 0x8656fd90 "\Driver\Serial" 0 total calls
+[00332] Description: "Serial Device Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\serial.sys"
+[00332]       * 0x86631038 "\Device\Serial0" Access: Everyone, 0 calls
+[00332]       * 0x86631890 "\Device\Serial1" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86570488 "\Driver\tdx" 0 total calls
+[00332] Description: "TDI Translation Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\tdx.sys"
+[00332]       * 0x864e3998 "\Device\Udp" Access: Everyone, 0 calls
+[00332]       * 0x86531030 "\Device\RawIp" Access: Everyone, 0 calls
+[00332]       * 0x86533b70 "\Device\RawIp6" Access: Everyone, 0 calls
+[00332]       * 0x865706b8 "\Device\Tcp" Access: Everyone, 0 calls
+[00332]       * 0x8657c290 "\Device\Udp6" Access: Everyone, 0 calls
+[00332]       * 0x865a3268 "\Device\Tdx" Access: Everyone, 0 calls
+[00332]       * 0x865a3d40 "\Device\Tcp6" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86572758 "\Driver\NetBT" 807 total calls
+[00332] Description: "MBT Transport driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\DRIVERS\netbt.sys"
+[00332]       * 0x8646da98 "\Device\NetBT_Tcpip_{FAA05194-404D-4D8D-874E-360B14D69B59}" Access: Authenticated, 402 calls
+[00332]       * 0x865c42c8 "\Device\NetBt_Wins_Export" Access: Authenticated, 3 calls
+[00332]         Opened by:
+[00332]           00716 "svchost.exe"
+[00332]       * 0x870fda48 "\Device\NetBT_Tcpip_{E66D667A-98B3-419D-BCB1-009BCE60BDDE}" Access: Authenticated, 402 calls
+[00332] 
+[00332] DRIVER: 0x8657fd98 "\Driver\AFD" 2008 total calls
+[00332] Description: "Ancillary Function Driver for WinSock"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\afd.sys"
+[00332]       * 0x8657f630 "\Device\Afd" Access: Everyone, 2008 calls
+[00332]         Opened by:
+[00332]           00364 "wininit.exe"
+[00332]           00480 "services.exe"
+[00332]           00492 "lsass.exe"
+[00332]           00668 "svchost.exe"
+[00332]           00716 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x8658b3e0 "\Driver\umbus" 0 total calls
+[00332] Description: "User-Mode Bus Enumerator"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\umbus.sys"
+[00332]       * 0x871e2ef0 "\Device\000000ab" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x8658d230 "\Driver\Null" 0 total calls
+[00332] Description: "NULL Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Null.SYS"
+[00332]       * 0x8658d108 "\Device\Null" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86598310 "\Driver\RDPENCDD" 0 total calls
+[00332] Description: "RDP Encoder Miniport"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\rdpencdd.sys"
+[00332]       * 0x864e71e8 "\Device\Video1" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x86598e00 "\Driver\RDPCDD" 0 total calls
+[00332] Description: "RDP Miniport"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\DRIVERS\RDPCDD.sys"
+[00332]       * 0x864e75d0 "\Device\Video0" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x86599398 "\Driver\volmgr" 67 total calls
+[00332] Description: "Volume Manager Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\volmgr.sys"
+[00332]       * 0x8613d638 "\Device\VolMgrControl" Access: Everyone, 0 calls
+[00332]       * 0x863b2030 "\Device\HarddiskVolume1" Access: Everyone, 67 calls
+[00332]         Opened by:
+[00332]           00224 "smss.exe"
+[00332]           00324 "csrss.exe"
+[00332]           00364 "wininit.exe"
+[00332]           00372 "csrss.exe"
+[00332]           00408 "winlogon.exe"
+[00332]           00480 "services.exe"
+[00332]           00492 "lsass.exe"
+[00332]           00500 "lsm.exe"
+[00332]           00604 "svchost.exe"
+[00332]           00668 "svchost.exe"
+[00332]           00716 "svchost.exe"
+[00332]           00836 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           00968 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332]           01196 "spoolsv.exe"
+[00332]           01228 "svchost.exe"
+[00332]           01404 "vmtoolsd.exe"
+[00332]           01480 "vmupgradehelper.exe"
+[00332]           01784 "taskhost.exe"
+[00332]           01860 "dwm.exe"
+[00332]           01880 "explorer.exe"
+[00332]           00248 "vmwaretray.exe"
+[00332]           00544 "vmwareuser.exe"
+[00332]           01400 "wmiprvse.exe"
+[00332]           01844 "cmd.exe"
+[00332]           00288 "conhost.exe"
+[00332]           00332 "ioctlfuzzer.exe"
+[00332] 
+[00332] DRIVER: 0x86599ee8 "\FileSystem\FltMgr" 0 total calls
+[00332] Description: "Microsoft Filesystem Filter Manager"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\fltmgr.sys"
+[00332]       * 0x86166570 "\FileSystem\Filters\FltMgr" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8659bd38 "\FileSystem\Msfs" 0 total calls
+[00332] Description: "Mailslot driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\Msfs.SYS"
+[00332]       * 0x865a4340 "\Device\Mailslot" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00224 "smss.exe"
+[00332] 
+[00332] DRIVER: 0x865a74c8 "\Driver\RDPREFMP" 0 total calls
+[00332] Description: "RDP Reflector Driver Miniport"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\rdprefmp.sys"
+[00332]       * 0x86590030 "\Device\Video2" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x865dcc30 "\Driver\Wanarpv6" 0 total calls
+[00332] Description: "MS Remote Access and Routing ARP Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\wanarp.sys"
+[00332]       * 0x86455a90 "\Device\WANARP" Access: Open Error, 0 calls
+[00332]       * 0x865c5db8 "\Device\WANARPV6" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x865e3188 "\Driver\nsiproxy" 28099 total calls
+[00332] Description: "NSI Proxy"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\nsiproxy.sys"
+[00332]       * 0x86522030 "\Device\Nsi" Access: Everyone, 28099 calls
+[00332]         Opened by:
+[00332]           00492 "lsass.exe"
+[00332]           00716 "svchost.exe"
+[00332]           00888 "svchost.exe"
+[00332]           00968 "svchost.exe"
+[00332]           01076 "svchost.exe"
+[00332]           01196 "spoolsv.exe"
+[00332]           01228 "svchost.exe"
+[00332]           01404 "vmtoolsd.exe"
+[00332]           01880 "explorer.exe"
+[00332]           01400 "wmiprvse.exe"
+[00332] 
+[00332] DRIVER: 0x865f5978 "\FileSystem\DfsC" 0 total calls
+[00332] Description: "DFS Namespace Client Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\dfsc.sys"
+[00332]       * 0x86522990 "\Device\DfsClient" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x8660c100 "\Driver\tunnel" 48 total calls
+[00332] Description: "Microsoft Tunnel Interface Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\tunnel.sys"
+[00332]       * 0x864a7028 "\Device\NDMP3" Access: Restricted, 16 calls
+[00332]       * 0x86669028 "\Device\NDMP1" Access: Restricted, 16 calls
+[00332]       * 0x8666f028 "\Device\NDMP2" Access: Restricted, 16 calls
+[00332]       * 0x86698db0 "\Device\TeredoTun" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x86625928 "\Driver\mouclass" 0 total calls
+[00332] Description: "Mouse Class Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\mouclass.sys"
+[00332]       * 0x86629030 "\Device\PointerClass0" Access: Open Error, 0 calls
+[00332]       * 0x8668b030 "\Device\PointerClass1" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x86629278 "\Driver\Parport" 0 total calls
+[00332] Description: "Parallel Port Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\parport.sys"
+[00332]       * 0x86200248 "\Device\Parallel0" Access: Everyone, 0 calls
+[00332]       * 0x8662f030 "\Device\ParallelPort0" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x866332d0 "\Driver\vmci" 0 total calls
+[00332] Description: "VMware PCI VMCI Bus Device"
+[00332] Company: "VMware, Inc."
+[00332] File path: "C:\Windows\system32\DRIVERS\vmci.sys"
+[00332]       * 0x86633030 "\Device\vmci" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x86633ec0 "\Driver\fdc" 4 total calls
+[00332] Description: "Floppy Disk Controller Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\fdc.sys"
+[00332]       * 0x8620fad0 "\Device\FloppyPDO0" Access: Everyone, 4 calls
+[00332] 
+[00332] DRIVER: 0x86639a20 "\Driver\vm3dmp" 0 total calls
+[00332] Description: "VMware SVGA 3D (Microsoft Corporation - WDDM) Miniport"
+[00332] Company: "VMware, Inc."
+[00332] File path: "C:\Windows\system32\DRIVERS\vm3dmp.sys"
+[00332]       * 0x853d7040 "\Device\Video4" Access: Open Error, 0 calls
+[00332]       * 0x8716b680 "\Device\Video5" Access: Open Error, 0 calls
+[00332]       * 0x87228848 "\Device\000000aa" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x86662c20 "\Driver\NdisWan" 6 total calls
+[00332] Description: "MS PPP Framing Driver (Strong Encryption)"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\ndiswan.sys"
+[00332]       * 0x865efe20 "\Device\NdisWan" Access: Open Error, 0 calls
+[00332]       * 0x8666d028 "\Device\NDMP8" Access: Restricted, 2 calls
+[00332]       * 0x86672028 "\Device\NDMP9" Access: Restricted, 2 calls
+[00332]       * 0x86674028 "\Device\NDMP10" Access: Restricted, 2 calls
+[00332] 
+[00332] DRIVER: 0x86663170 "\Driver\DXGKrnl" 0 total calls
+[00332] Description: "DirectX Graphics Kernel"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\drivers\dxgkrnl.sys"
+[00332]       * 0x8665daf0 "\Device\DxgKrnl" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x86664a68 "\Driver\E1G60" 826 total calls
+[00332] Description: "Intel(R) PRO/1000 Adapter NDIS 6 deserialized driver"
+[00332] Company: "Intel Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\E1G60I32.sys"
+[00332]       * 0x86224d90 "\Device\INTELPRO_{FAA05194-404D-4D8D-874E-360B14D69B59}" Access: Restricted, 0 calls
+[00332]       * 0x86616028 "\Device\NDMP4" Access: Restricted, 442 calls
+[00332]       * 0x8665f028 "\Device\NDMP5" Access: Restricted, 384 calls
+[00332]       * 0x870f2168 "\Device\INTELPRO_{E66D667A-98B3-419D-BCB1-009BCE60BDDE}" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x86668eb0 "\Driver\RasAgileVpn" 18 total calls
+[00332] Description: "RAS Agile Vpn Miniport Call Manager"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\AgileVpn.sys"
+[00332]       * 0x861a2028 "\Device\NDMP6" Access: Restricted, 18 calls
+[00332]       * 0x86668788 "\Device\AgileVPN" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x8666c320 "\Driver\NdisTapi" 0 total calls
+[00332] Description: "NDIS 3.0 connection wrapper driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\ndistapi.sys"
+[00332]       * 0x8666c5f8 "\Device\NdisTapi" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x866736e8 "\Driver\RasPppoe" 18 total calls
+[00332] Description: "RAS PPPoE mini-port/call-manager driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\raspppoe.sys"
+[00332]       * 0x86679028 "\Device\NDMP11" Access: Restricted, 18 calls
+[00332] 
+[00332] DRIVER: 0x86675370 "\Driver\PptpMiniport" 18 total calls
+[00332] Description: "Peer-to-Peer Tunneling Protocol"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\raspptp.sys"
+[00332]       * 0x8667b028 "\Device\NDMP12" Access: Restricted, 18 calls
+[00332] 
+[00332] DRIVER: 0x8667ac98 "\Driver\rdpbus" 0 total calls
+[00332] Description: "Microsoft RDP Bus Device driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\rdpbus.sys"
+[00332]       * 0x8667e208 "\Device\RdpBus" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x8667cb28 "\Driver\RasSstp" 18 total calls
+[00332] Description: "RAS SSTP Miniport Call Manager"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\rassstp.sys"
+[00332]       * 0x8667c2a8 "\Device\SstpDrv" Access: Open Error, 0 calls
+[00332]       * 0x8667d028 "\Device\NDMP13" Access: Restricted, 18 calls
+[00332] 
+[00332] DRIVER: 0x86a1c608 "\Driver\intelide" 0 total calls
+[00332] Description: "Intel PCI IDE Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\intelide.sys"
+[00332]       * 0x86144870 "\Device\Ide\PciIde0Channel1" Access: Restricted, 0 calls
+[00332]       * 0x86159688 "\Device\Ide\PciIde0Channel0" Access: Restricted, 0 calls
+[00332] 
+[00332] DRIVER: 0x86c5c8d8 "\Driver\NDProxy" 0 total calls
+[00332] Description: "NDIS Proxy"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\Drivers\NDProxy.SYS"
+[00332]       * 0x86c5c770 "\Device\NDProxy" Access: Open Error, 0 calls
+[00332] 
+[00332] DRIVER: 0x87604408 "\FileSystem\bowser" 23 total calls
+[00332] Description: "NT Lan Manager Datagram Receiver Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\bowser.sys"
+[00332]       * 0x876173c8 "\Device\LanmanDatagramReceiver" Access: Everyone, 23 calls
+[00332]         Opened by:
+[00332]           01076 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x87649a98 "\Driver\Parvdm" 0 total calls
+[00332] Description: "VDM Parallel Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\DRIVERS\parvdm.sys"
+[00332]       * 0x87649930 "\Device\ParallelVdm0" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x876644f8 "\Driver\secdrv" 0 total calls
+[00332] Description: "Macrovision SECURITY Driver"
+[00332] Company: "Macrovision Corporation, Macrovision Europe Limited, and Macrovision Japan and Asia K.K."
+[00332] File path: "C:\Windows\System32\Drivers\secdrv.SYS"
+[00332]       * 0x87664930 "\Device\AscKmd" Access: Everyone, 0 calls
+[00332]       * 0x87665030 "\Device\Secdrv" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x87664ca0 "\Driver\PEAUTH" 0 total calls
+[00332] Description: "Protected Environment Authentication and Authorization Export Driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\system32\drivers\peauth.sys"
+[00332]       * 0x87663998 "\Device\PEAuth" Access: Everyone, 0 calls
+[00332] 
+[00332] DRIVER: 0x87665a30 "\FileSystem\srvnet" 0 total calls
+[00332] Description: "Server Network driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\DRIVERS\srvnet.sys"
+[00332]       * 0x876652a0 "\Device\SrvNet" Access: Restricted, 0 calls
+[00332]       * 0x87665788 "\Device\SrvAdmin" Access: Open Error, 0 calls
+[00332]         Opened by:
+[00332]           00888 "svchost.exe"
+[00332] 
+[00332] DRIVER: 0x876be468 "\FileSystem\srv" 0 total calls
+[00332] Description: "Server driver"
+[00332] Company: "Microsoft Corporation"
+[00332] File path: "C:\Windows\System32\DRIVERS\srv.sys"
+[00332]       * 0x876bfb40 "\Device\LanmanServer" Access: Everyone, 0 calls
+[00332]         Opened by:
+[00332]           00888 "svchost.exe"
+[00332] 
+[00332] [+] 165 devices in 73 drivers displayed
+[00332] [+] Interesting drivers:
+
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\ACPI.sys
+[00332] "Microsoft Corporation", "ACPI Driver for NT"
+[00332] 
+[00332] C:\Windows\System32\drivers\mountmgr.sys
+[00332] "Microsoft Corporation", "Mount Point Manager"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\lsi_sas.sys
+[00332] "LSI Corporation", "LSI Fusion-MPT SAS Driver (StorPort)"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\compbatt.sys
+[00332] "Microsoft Corporation", "Composite Battery Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Ntfs.sys
+[00332] "Microsoft Corporation", "NT File System Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\cng.sys
+[00332] "Microsoft Corporation", "Kernel Cryptography, Next Generation"
+[00332] 
+[00332] C:\Windows\System32\drivers\pcw.sys
+[00332] "Microsoft Corporation", "Performance Counters for Windows Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Fs_Rec.sys
+[00332] "Microsoft Corporation", "File System Recognizer Driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\ndis.sys
+[00332] "Microsoft Corporation", "NDIS 6.20 driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\ksecdd.sys
+[00332] "Microsoft Corporation", "Kernel Security Support Provider Interface"
+[00332] 
+[00332] C:\Windows\system32\drivers\pci.sys
+[00332] "Microsoft Corporation", "NT Plug and Play PCI Enumerator"
+[00332] 
+[00332] C:\Windows\System32\DRIVERS\srv2.sys
+[00332] "Microsoft Corporation", "Smb 2.0 Server driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\flpydisk.sys
+[00332] "Microsoft Corporation", "Floppy Driver"
+[00332] 
+[00332] C:\Windows\System32\drivers\rdyboost.sys
+[00332] "Microsoft Corporation", "ReadyBoost Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\mup.sys
+[00332] "Microsoft Corporation", "Multiple UNC Provider Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\spldr.sys
+[00332] "Microsoft Corporation", "loader for security processor"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\disk.sys
+[00332] "Microsoft Corporation", "PnP Disk Driver"
+[00332] 
+[00332] C:\Windows\System32\drivers\partmgr.sys
+[00332] "Microsoft Corporation", "Partition Management Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\rdbss.sys
+[00332] "Microsoft Corporation", "Redirected Drive Buffering SubSystem Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\blbdrive.sys
+[00332] "Microsoft Corporation", "BLB Drive Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Beep.SYS
+[00332] "Microsoft Corporation", "BEEP Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\netbios.sys
+[00332] "Microsoft Corporation", "NetBIOS interface driver"
+[00332] 
+[00332] C:\Windows\System32\DRIVERS\vmhgfs.sys
+[00332] "VMware, Inc.", "VMware HGFS File System Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Npfs.SYS
+[00332] "Microsoft Corporation", "NPFS Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\serial.sys
+[00332] "Microsoft Corporation", "Serial Device Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\tdx.sys
+[00332] "Microsoft Corporation", "TDI Translation Driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\afd.sys
+[00332] "Microsoft Corporation", "Ancillary Function Driver for WinSock"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Null.SYS
+[00332] "Microsoft Corporation", "NULL Driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\volmgr.sys
+[00332] "Microsoft Corporation", "Volume Manager Driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\fltmgr.sys
+[00332] "Microsoft Corporation", "Microsoft Filesystem Filter Manager"
+[00332] 
+[00332] C:\Windows\System32\Drivers\Msfs.SYS
+[00332] "Microsoft Corporation", "Mailslot driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\nsiproxy.sys
+[00332] "Microsoft Corporation", "NSI Proxy"
+[00332] 
+[00332] C:\Windows\System32\Drivers\dfsc.sys
+[00332] "Microsoft Corporation", "DFS Namespace Client Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\parport.sys
+[00332] "Microsoft Corporation", "Parallel Port Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\vmci.sys
+[00332] "VMware, Inc.", "VMware PCI VMCI Bus Device"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\fdc.sys
+[00332] "Microsoft Corporation", "Floppy Disk Controller Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\bowser.sys
+[00332] "Microsoft Corporation", "NT Lan Manager Datagram Receiver Driver"
+[00332] 
+[00332] C:\Windows\system32\DRIVERS\parvdm.sys
+[00332] "Microsoft Corporation", "VDM Parallel Driver"
+[00332] 
+[00332] C:\Windows\System32\Drivers\secdrv.SYS
+[00332] "Macrovision Corporation, Macrovision Europe Limited, and Macrovision Japan and Asia K.K.", "Macrovision SECURITY Driver"
+[00332] 
+[00332] C:\Windows\system32\drivers\peauth.sys
+[00332] "Microsoft Corporation", "Protected Environment Authentication and Authorization Export Driver"
+[00332] 
+[00332] C:\Windows\System32\DRIVERS\srv.sys
+[00332] "Microsoft Corporation", "Server driver"
+[00332] 
+[00332] 
+driver.cpp(1216) : DriverDispatch(): IRP_MJ_CLOSE

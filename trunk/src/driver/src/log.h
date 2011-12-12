@@ -1,3 +1,4 @@
 
 void LogData(char *lpszFormat, ...);
-void Hexdump(PUCHAR Data, ULONG Size);
+void LogDataIoctls(char *lpszFormat, ...);
+void LogDataHexdump(PUCHAR Data, ULONG Size);

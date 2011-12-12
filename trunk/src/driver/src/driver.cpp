@@ -18,6 +18,9 @@ ULONG m_SDT_NtProtectVirtualMemory = 0;
 PVOID _KiServiceInternal = 0;
 #endif
 
+extern POBJECT_TYPE *IoDeviceObjectType;
+extern POBJECT_TYPE *IoFileObjectType;
+
 }
 
 // defined in handlers.cpp
@@ -38,6 +41,8 @@ UNICODE_STRING m_RegistryPath;
 PCOMMON_LST m_ProcessesList = NULL;
 KMUTEX m_CommonMutex;
 
+BOOLEAN m_bHooksInitialized = FALSE;
+
 /**
  * Stuff for excaption monitoring
  * defined in excpthook.cpp
@@ -52,6 +57,7 @@ extern ULONG m_KiDispatchException_Offset;
  */
 extern FUZZING_TYPE m_FuzzingType;
 extern ULONG m_FuzzOptions;
+extern BOOLEAN m_bEnableDbgcb;
 
 extern HANDLE m_FuzzThreadId;
 extern PEPROCESS m_FuzzProcess;
@@ -65,6 +71,12 @@ extern PIOCTL_FILTER f_allow_head;
 extern PIOCTL_FILTER f_allow_end;
 extern PIOCTL_FILTER f_deny_head;
 extern PIOCTL_FILTER f_deny_end;
+extern PIOCTL_FILTER f_dbgcb_head;
+extern PIOCTL_FILTER f_dbgcb_end;
+
+// defined in log.cpp
+extern HANDLE m_hIoctlsLogFile;
+extern UNICODE_STRING m_usIoctlsLogFilePath;
 
 extern "C" PUSHORT NtBuildNumber;
 extern "C" NTSTATUS NTAPI DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
@@ -381,6 +393,12 @@ BOOLEAN InitSdtNumbers(void)
 //--------------------------------------------------------------------------------------
 BOOLEAN SetUpHooks(void)
 {
+    if (m_bHooksInitialized)
+    {
+        // hooks is allready initialized
+        return TRUE;
+    }
+
     // lookup for SDT indexes
     if (!InitSdtNumbers())
     {
@@ -504,6 +522,8 @@ BOOLEAN RemoveHooks(void)
         ForEachProcessor(SetWp, NULL);
     }
 
+    m_bHooksInitialized = FALSE;
+
     return TRUE;
 }
 //--------------------------------------------------------------------------------------
@@ -608,7 +628,7 @@ BOOLEAN LoadFuzzerOptions(void)
                 m_FuzzOptions = *(PULONG)Val;
                 DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): m_FuzzOptions has been set to 0x%.8x\n", m_FuzzOptions);
 
-                if (m_FuzzOptions & FUZZ_OPT_BOOTFUZZ)
+                if (m_FuzzOptions & FUZZ_OPT_FUZZ_BOOT)
                 {
                      bBootFuzzingEnabled = TRUE;
                 }
@@ -656,6 +676,44 @@ BOOLEAN LoadFuzzerOptions(void)
     return FALSE;
 }
 //--------------------------------------------------------------------------------------
+PFILE_OBJECT GetDeviceObjectPointer(PUNICODE_STRING usDeviceName)
+{
+    PFILE_OBJECT pObject = NULL;
+    HANDLE hDevice = NULL;
+    OBJECT_ATTRIBUTES ObjAttr;
+    IO_STATUS_BLOCK StatusBlock;
+
+    InitializeObjectAttributes(&ObjAttr, usDeviceName, OBJ_KERNEL_HANDLE | OBJ_CASE_INSENSITIVE , NULL, NULL);
+
+    NTSTATUS ns = ZwOpenFile(
+        &hDevice, 
+        FILE_READ_DATA | FILE_WRITE_DATA | SYNCHRONIZE, 
+        &ObjAttr, 
+        &StatusBlock, 
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 
+        FILE_SYNCHRONOUS_IO_NONALERT
+    );
+    if (NT_SUCCESS(ns))
+    {
+        ns = ObReferenceObjectByHandle(hDevice, 0, *IoFileObjectType, KernelMode, (PVOID *)&pObject, NULL);
+        if (!NT_SUCCESS(ns))
+        {
+            DbgMsg(__FILE__, __LINE__, "ObReferenceObjectByHandle() fails; status: 0x%.8x\n", ns);
+        } 
+
+        ZwClose(hDevice);
+    }
+    else
+    {
+        DbgMsg(
+            __FILE__, __LINE__, "Error while opening \"%wZ\"; status: 0x%.8x\n", 
+            usDeviceName, ns
+        );
+    }
+
+    return pObject;
+}
+//--------------------------------------------------------------------------------------
 NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     PIO_STACK_LOCATION stack;
@@ -672,114 +730,188 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         ULONG Size = stack->Parameters.DeviceIoControl.InputBufferLength;
         PREQUEST_BUFFER Buff = (PREQUEST_BUFFER)Irp->AssociatedIrp.SystemBuffer;
 
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): IRP_MJ_DEVICE_CONTROL 0x%.8x\n", Code);
+#ifdef DBG_IO
 
+        DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): IRP_MJ_DEVICE_CONTROL 0x%.8x\n", Code);
+#endif
         Irp->IoStatus.Information = Size;
 
         switch (Code)
         {
         case IOCTL_DRV_CONTROL:
             {
+                Buff->Status = S_ERROR;
+
                 if (Size >= sizeof(REQUEST_BUFFER))
                 {
-                    IOCTL_FILTER Flt;
+                    ULONG KdCommandLength = 0;
+                    IOCTL_FILTER Flt;                    
                     RtlZeroMemory(&Flt, sizeof(Flt));
+
+                    if (Buff->AddObject.bDbgcbAction && Size > sizeof(REQUEST_BUFFER))
+                    {
+                        // check for zero byte at the end of the string
+                        if (Buff->Buff[Size - sizeof(REQUEST_BUFFER) - 1] != 0)
+                        {          
+                            goto _bad_addobj_request;
+                        }
+
+                        // debugger command available
+                        KdCommandLength = strlen(Buff->Buff) + 1;
+                    }
 
                     switch (Buff->Code)
                     {
                     case C_ADD_DRIVER:
                     case C_ADD_DEVICE:
                     case C_ADD_PROCESS:
+                    case C_ADD_IOCTL:
                         {
-                            Buff->Status = S_ERROR;
-
                             // check for zero byte at the end of the string
-                            if (Size > sizeof(REQUEST_BUFFER) &&
-                                Buff->Buff[Size - sizeof(REQUEST_BUFFER) - 1] == 0)
+                            if (Buff->AddObject.szObjectName[MAX_REQUEST_STRING - 1] != 0)
                             {          
+                                goto _bad_addobj_request;
+                            }
+
+                            if (Buff->Code == C_ADD_IOCTL)
+                            {
+                                Flt.IoctlCode = Buff->AddObject.IoctlCode;
+                            }
+                            else
+                            {
                                 ANSI_STRING asName;
 
                                 RtlInitAnsiString(
                                     &asName,
-                                    Buff->Buff
+                                    Buff->AddObject.szObjectName
                                 );
 
                                 NTSTATUS status = RtlAnsiStringToUnicodeString(&Flt.usName, &asName, TRUE);
-                                if (NT_SUCCESS(status))
-                                {
-                                    switch (Buff->Code)
-                                    {
-                                    case C_ADD_DRIVER:
-                                        Flt.Type = FLT_DRIVER_NAME;
-                                        break;
-
-                                    case C_ADD_DEVICE:
-                                        Flt.Type = FLT_DEVICE_NAME;
-                                        break;
-
-                                    case C_ADD_PROCESS:
-                                        Flt.Type = FLT_PROCESS_PATH;
-                                        break;
-                                    }   
-
-                                    // add filter rule by driver or device name
-                                    if (Buff->bAllow)
-                                    {
-                                        if (!FltAllowAdd(&Flt))
-                                        {
-                                            RtlFreeUnicodeString(&Flt.usName);
-                                        }
-                                        else
-                                        {
-                                            Buff->Status = S_SUCCESS;
-                                        }
-                                    }    
-                                    else
-                                    {
-                                        if (!FltDenyAdd(&Flt))
-                                        {
-                                            RtlFreeUnicodeString(&Flt.usName);
-                                        }
-                                        else
-                                        {
-                                            Buff->Status = S_SUCCESS;
-                                        }
-                                    }                                  
-                                }
-                                else
+                                if (!NT_SUCCESS(status))
                                 {
                                     DbgMsg(__FILE__, __LINE__, "RtlAnsiStringToUnicodeString() fails; status: 0x%.8x\n", status);
+                                    goto _bad_addobj_request;
                                 }
-                            }
+                            }                            
+                                    
+                            switch (Buff->Code)
+                            {
+                            case C_ADD_DRIVER:
 
+                                // filter by driver file name/path
+                                Flt.Type = FLT_DRIVER_NAME;
+                                break;
+
+                            case C_ADD_DEVICE:
+
+                                // filter by device name
+                                Flt.Type = FLT_DEVICE_NAME;
+                                break;
+
+                            case C_ADD_PROCESS:
+
+                                // filter by caller process executable file name/path
+                                Flt.Type = FLT_PROCESS_PATH;
+                                break;
+
+                            case C_ADD_IOCTL:
+
+                                // filter by IOCTL control code value
+                                Flt.Type = FLT_IOCTL_CODE;
+                                break;
+                            }   
+
+                            KeWaitForMutexObject(&m_CommonMutex, Executive, KernelMode, FALSE, NULL); 
+
+                            __try
+                            {
+                                PIOCTL_FILTER f_entry = NULL;
+
+                                if (Buff->AddObject.bDbgcbAction)
+                                {
+                                    // add rule into the debugger commands list
+                                    if (f_entry = FltDbgcbAdd(&Flt, KdCommandLength))
+                                    {
+                                        Buff->Status = S_SUCCESS;
+
+                                        if (!m_bEnableDbgcb)
+                                        {
+                                            // try to reload symbols
+                                            if (dbg_exec(".reload"))
+                                            {
+                                                // kernel debugger communication engine is available and initialized
+                                                m_bEnableDbgcb = TRUE;
+                                            }                        
+                                            else
+                                            {
+                                                DbgMsg(
+                                                    __FILE__, __LINE__, 
+                                                    __FUNCTION__"(): Kernel debugger interaction is not available\n"
+                                                );
+                                            }
+                                        }                                        
+                                    }
+                                }
+                                else if (Buff->AddObject.bAllow)
+                                {
+                                    // add filter rule into the ALLOW list
+                                    if (f_entry = FltAllowAdd(&Flt, KdCommandLength))
+                                    {
+                                        Buff->Status = S_SUCCESS;
+                                    }
+                                }    
+                                else
+                                {
+                                    // add filter rule into the DENY list
+                                    if (f_entry = FltDenyAdd(&Flt, KdCommandLength))
+                                    {
+                                        Buff->Status = S_SUCCESS;
+                                    }
+                                }
+
+                                if (f_entry)
+                                {
+                                    f_entry->bDbgcbAction = Buff->AddObject.bDbgcbAction;
+                                    if (KdCommandLength > 0)
+                                    {
+                                        strcpy(f_entry->szKdCommand, Buff->Buff);
+
+                                        if (Buff->Code == C_ADD_IOCTL)
+                                        {
+                                            DbgPrint(
+                                                "<?dml?>" __FUNCTION__ "(): ControlCode=0x%.8x KdCommand=<exec cmd=\"%s\">%s</exec>\n",
+                                                f_entry->IoctlCode, f_entry->szKdCommand, f_entry->szKdCommand
+                                            );
+                                        }
+                                        else
+                                        {
+                                            DbgPrint(
+                                                "<?dml?>" __FUNCTION__ "(): Object=\"%wZ\" KdCommand=<exec cmd=\"%s\">%s</exec>\n",
+                                                &f_entry->usName, f_entry->szKdCommand, f_entry->szKdCommand
+                                            );
+                                        }
+                                    }
+                                }
+                            }    
+                            __finally
+                            {
+                                KeReleaseMutex(&m_CommonMutex, FALSE);
+                            }    
+
+                            if (Buff->Status != S_SUCCESS &&
+                                Buff->Code != C_ADD_IOCTL)
+                            {
+                                RtlFreeUnicodeString(&Flt.usName);
+                            }
+_bad_addobj_request:
                             break;
                         }
 
-                    case C_ADD_IOCTL:
+                    case C_DEL_OPTIONS:
                         {
-                            Flt.IoctlCode = Buff->IoctlCode;
-                            Flt.Type = FLT_IOCTL_CODE;
-
-                            Buff->Status = S_ERROR;
-
-                            // add filter rule by IOCTL code
-                            if (Buff->bAllow)
-                            {
-                                if (FltAllowAdd(&Flt))
-                                {
-                                    Buff->Status = S_SUCCESS;
-                                }
-                            }
-                            else
-                            {
-                                if (FltDenyAdd(&Flt))
-                                {
-                                    Buff->Status = S_SUCCESS;
-                                }
-                            }
-
+                            DeleteSavedFuzzerOptions();
                             break;
-                        }
+                        }                    
 
                     case C_SET_OPTIONS:
                         {
@@ -788,6 +920,21 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                             __try
                             {
                                 m_FuzzOptions = Buff->Options.Options;
+
+                                if (!(m_FuzzOptions & FUZZ_OPT_NO_SDT_HOOKS))
+                                {
+                                    // hook nt!NtDeviceIoControlFile() syscall
+                                    m_bHooksInitialized = SetUpHooks();
+                                }
+
+                                if (!(m_FuzzOptions & FUZZ_OPT_LOG_IOCTL_GLOBAL) && m_hIoctlsLogFile)
+                                {
+                                    ZwClose(m_hIoctlsLogFile);
+                                    m_hIoctlsLogFile = NULL;
+
+                                    DbgMsg(__FILE__, __LINE__, "[+] IOCTLs log closed \"%wZ\"\n", &m_usIoctlsLogFilePath);
+                                }
+                                
                                 m_FuzzingType = Buff->Options.FuzzingType;
                                 m_UserModeData = Buff->Options.UserModeData;
 #ifdef _X86_
@@ -797,10 +944,10 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                                 FuzzThreadId->HighPart = 0;
                                 FuzzThreadId->LowPart = Buff->Options.FuzzThreadId;
 #endif                                 
-                                if (m_FuzzOptions & FUZZ_OPT_BOOTFUZZ)
+                                if (m_FuzzOptions & FUZZ_OPT_FUZZ_BOOT)
                                 {
                                     // fair fizzing is not available in the boot fuzzing mode
-                                    m_FuzzOptions &= ~FUZZ_OPT_FAIRFUZZ;
+                                    m_FuzzOptions &= ~FUZZ_OPT_FUZZ_FAIR;
 
                                     // boot fuzzing mode has been enabled
                                     SaveFuzzerOptions();
@@ -811,7 +958,8 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                                     DeleteSavedFuzzerOptions();
                                 }
 
-                                if (Buff->Options.KiDispatchException_Offset > 0)
+                                if ((m_FuzzOptions & FUZZ_OPT_LOG_EXCEPTIONS) &&
+                                    Buff->Options.KiDispatchException_Offset > 0)
                                 {
                                     // ofsset of unexported function for exceptions monitoring
                                     m_KiDispatchException_Offset = Buff->Options.KiDispatchException_Offset;
@@ -838,6 +986,192 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 
                             break;
                         }
+
+                    case C_GET_DEVICE_INFO:
+                        {
+                            // check for zero byte at the end of the string
+                            if (Size > sizeof(REQUEST_BUFFER) &&
+                                Buff->Buff[Size - sizeof(REQUEST_BUFFER) - 1] == 0)
+                            {          
+                                ANSI_STRING asDeviceName;
+                                UNICODE_STRING usDeviceName;
+
+                                RtlInitAnsiString(
+                                    &asDeviceName,
+                                    Buff->Buff
+                                );
+
+                                NTSTATUS status = RtlAnsiStringToUnicodeString(&usDeviceName, &asDeviceName, TRUE);
+                                if (NT_SUCCESS(status))
+                                {
+                                    // open disk device object
+                                    PDEVICE_OBJECT TargetDeviceObject = NULL;
+                                    PFILE_OBJECT TargetFileObject = NULL;
+#ifdef USE_IoGetDeviceObjectPointer
+                                    status = IoGetDeviceObjectPointer(
+                                        &usDeviceName, 
+                                        GENERIC_READ | GENERIC_WRITE | SYNCHRONIZE,
+                                        &TargetFileObject, 
+                                        &TargetDeviceObject
+                                    );
+                                    if (NT_SUCCESS(status))     
+#else
+                                    if (TargetFileObject = GetDeviceObjectPointer(&usDeviceName))
+                                    {
+                                        TargetDeviceObject = TargetFileObject->DeviceObject;
+                                    }
+
+                                    if (TargetFileObject)
+#endif
+                                    {
+                                        // pass device object information to the caller
+                                        Buff->DeviceInfo.DeviceObjectAddr = TargetDeviceObject;
+                                        if (TargetDeviceObject->DriverObject)
+                                        {
+                                            Buff->DeviceInfo.DriverObjectAddr = TargetDeviceObject->DriverObject;
+
+                                            // get driver object name by pointer
+                                            POBJECT_NAME_INFORMATION NameInfo = GetObjectName(TargetDeviceObject->DriverObject);
+                                            if (NameInfo)
+                                            {
+                                                ANSI_STRING asDriverName;
+                                                status = RtlUnicodeStringToAnsiString(&asDriverName, &NameInfo->Name, TRUE);
+                                                if (NT_SUCCESS(status))
+                                                {
+                                                    strncpy(
+                                                        Buff->DeviceInfo.szDriverObjectName,
+                                                        asDriverName.Buffer,
+                                                        min(MAX_REQUEST_STRING - 1, asDriverName.Length)
+                                                    );
+
+                                                    RtlFreeAnsiString(&asDriverName);
+                                                }
+                                                else
+                                                {
+                                                    DbgMsg(__FILE__, __LINE__, "RtlUnicodeStringToAnsiString() fails; status: 0x%.8x\n", status);                                                
+                                                }
+
+                                                ExFreePool(NameInfo);
+                                            }
+
+                                            // get loader information entry for the driver
+                                            PLDR_DATA_TABLE_ENTRY pModuleEntry = (PLDR_DATA_TABLE_ENTRY)
+                                                TargetDeviceObject->DriverObject->DriverSection;
+
+                                            if (pModuleEntry && 
+                                                MmIsAddressValid(pModuleEntry) && 
+                                                ValidateUnicodeString(&pModuleEntry->FullDllName))
+                                            {
+                                                ANSI_STRING asDllName;
+                                                status = RtlUnicodeStringToAnsiString(&asDllName, &pModuleEntry->FullDllName, TRUE);
+                                                if (NT_SUCCESS(status))
+                                                {
+                                                    strncpy(
+                                                        Buff->DeviceInfo.szDriverFilePath,
+                                                        asDllName.Buffer,
+                                                        min(MAX_REQUEST_STRING - 1, asDllName.Length)
+                                                    );
+
+                                                    RtlFreeAnsiString(&asDllName);
+                                                }
+                                                else
+                                                {
+                                                    DbgMsg(__FILE__, __LINE__, "RtlUnicodeStringToAnsiString() fails; status: 0x%.8x\n", status);                                                
+                                                }
+                                            }
+
+                                            Buff->Status = S_SUCCESS;
+                                        }                                 
+
+                                        ObDereferenceObject(TargetFileObject);
+                                    }
+#ifdef USE_IoGetDeviceObjectPointer
+                                    else
+                                    {
+                                        DbgMsg(
+                                            __FILE__, __LINE__, 
+                                            "IoGetDeviceObjectPointer() fails for \"%wZ\", status: 0x%.8x\n", 
+                                            &usDeviceName, status
+                                        );                                                
+                                    }
+#endif
+                                    RtlFreeUnicodeString(&usDeviceName);          
+                                }
+                                else
+                                {
+                                    DbgMsg(__FILE__, __LINE__, "RtlAnsiStringToUnicodeString() fails; status: 0x%.8x\n", status);
+                                }
+                            }
+
+                            break;
+                        }
+
+                    case C_GET_OBJECT_NAME:
+                        {
+                            PFILE_OBJECT pFileObject = NULL;
+                            NTSTATUS ns = ObReferenceObjectByHandle(
+                                Buff->ObjectName.hObject, 
+                                0, 
+                                *IoFileObjectType, 
+                                KernelMode, 
+                                (PVOID *)&pFileObject, 
+                                NULL
+                            );
+                            if (NT_SUCCESS(ns))
+                            {
+                                if (pFileObject->DeviceObject)
+                                {
+                                    // get name of the object
+                                    POBJECT_NAME_INFORMATION NameInfo = GetObjectName(pFileObject->DeviceObject);
+                                    if (NameInfo)
+                                    {                        
+                                        ANSI_STRING asName;
+                                        ns = RtlUnicodeStringToAnsiString(&asName, &NameInfo->Name, TRUE);
+                                        if (NT_SUCCESS(ns))
+                                        {
+                                            strncpy(
+                                                Buff->ObjectName.szObjectName,
+                                                asName.Buffer,
+                                                min(MAX_REQUEST_STRING - 1, asName.Length)
+                                            );
+
+                                            Buff->Status = S_SUCCESS;
+
+                                            RtlFreeAnsiString(&asName);
+                                        }
+                                        else
+                                        {
+                                            DbgMsg(__FILE__, __LINE__, "RtlUnicodeStringToAnsiString() fails; status: 0x%.8x\n", ns);
+                                        }
+
+                                        M_FREE(NameInfo);
+                                    }
+                                }
+
+                                ObDereferenceObject(pFileObject);
+                            } 
+                            else
+                            {
+                                DbgMsg(__FILE__, __LINE__, "ObReferenceObjectByHandle() fails; status: 0x%.8x\n", ns);
+                            }                 
+
+                            break;
+                        }
+
+                    case C_CHECK_HOOKS:
+                        {
+                            if (m_bKiDispatchExceptionHooked ||
+                                m_bHooksInitialized)
+                            {
+                                Buff->CheckHooks.bHooksInstalled = TRUE;
+                            }
+                            else
+                            {
+                                Buff->CheckHooks.bHooksInstalled = FALSE;
+                            }
+
+                            break;
+                        }
                     }
                 }
 
@@ -857,6 +1191,7 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): IRP_MJ_CREATE\n");
 
 #ifdef DBGPIPE
+
         DbgOpenPipe();
 #endif
         KeWaitForMutexObject(&m_CommonMutex, Executive, KernelMode, FALSE, NULL);
@@ -866,6 +1201,7 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             // delete all filter rules
             FltAllowFlushList();
             FltDenyFlushList();
+            FltDbgcbFlushList();
 
             m_FuzzProcess = PsGetCurrentProcess();
             ObReferenceObject(m_FuzzProcess);
@@ -886,6 +1222,7 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             // delete all filter rules
             FltAllowFlushList();
             FltDenyFlushList();
+            FltDbgcbFlushList();
 
             m_FuzzOptions = 0;
 
@@ -901,8 +1238,17 @@ NTSTATUS DriverDispatch(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }                
 
 #ifdef DBGPIPE
+
         DbgClosePipe();
 #endif
+
+        if (m_hIoctlsLogFile)
+        {
+            ZwClose(m_hIoctlsLogFile);
+            m_hIoctlsLogFile = NULL;
+
+            DbgMsg(__FILE__, __LINE__, "[+] IOCTLs log closed \"%wZ\"\n", &m_usIoctlsLogFilePath);
+        }
     }
 
     if (ns != STATUS_PENDING)
@@ -931,6 +1277,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
         // delete all filter rules
         FltAllowFlushList();
         FltDenyFlushList();
+        FltDbgcbFlushList();
     }    
     __finally
     {
@@ -1021,11 +1368,13 @@ NTSTATUS NTAPI DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING Registry
             ns = PsSetCreateProcessNotifyRoutine(ProcessNotifyRoutine, FALSE);
             if (NT_SUCCESS(ns))
             {
-                // hook NtDeviceIoControlFile() system service
-                if (SetUpHooks())
+                // load options for boot fuzzing (if available)
+                LoadFuzzerOptions();
+
+                if (m_FuzzOptions & FUZZ_OPT_FUZZ_BOOT)
                 {
-                    // load options for boot fuzzing (if available)
-                    LoadFuzzerOptions();
+                    // hook nt!NtDeviceIoControlFile() syscall
+                    m_bHooksInitialized = SetUpHooks();
                 }
 
                 return STATUS_SUCCESS;

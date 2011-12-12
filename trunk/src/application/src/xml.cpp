@@ -1,6 +1,81 @@
 #include "stdafx.h"
 //--------------------------------------------------------------------------------------
-IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOMNodeList)
+/** 
+* загрузка и парсинг xml документа
+* @param data текст загружаемого xml докуммента
+* @return TRUE если всё ОК, FALSE в случае ошибки
+*/
+BOOL XmlLoad(PWSTR lpwcData, IXMLDOMDocument **pXMLDoc, IXMLDOMNode **pIDOMRootNode, PWSTR lpwcRootNodeName)
+{
+    BOOL bOk = FALSE;
+    VARIANT_BOOL status;
+
+    // initialize COM
+    HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    if (FAILED(hr))
+    {
+        DbgMsg(__FILE__, __LINE__, "CoInitializeEx() ERROR 0x%.8x\n", hr);
+        return FALSE;
+    }    
+
+    // create new msxml document instance
+    hr = CoCreateInstance(CLSID_DOMDocument, NULL, CLSCTX_INPROC_SERVER, 
+        IID_IXMLDOMDocument, (void **)pXMLDoc);
+    if (FAILED(hr)) 
+    {
+        DbgMsg(__FILE__, __LINE__, "CoCreateInstance() ERROR 0x%.8x\n", hr);
+        return FALSE;
+    }    
+
+    hr = (*pXMLDoc)->loadXML(lpwcData, &status);
+    if (status != VARIANT_TRUE)
+    {
+        DbgMsg(__FILE__, __LINE__, "pXMLDoc->load() ERROR 0x%.8x\n", hr);
+        goto end;
+    }
+
+    // если xml загружен, получаем список корневых узлов
+    // из которого получаем главный подузел 'logger'
+    IXMLDOMNodeList *pIDOMRootNodeList;
+    hr = (*pXMLDoc)->get_childNodes(&pIDOMRootNodeList);
+    if (SUCCEEDED(hr))
+    {
+        *pIDOMRootNode = ConfGetListNodeByName(lpwcRootNodeName, pIDOMRootNodeList);
+        if (*pIDOMRootNode)
+        {
+            bOk = TRUE;
+        }            
+
+        pIDOMRootNodeList->Release();        
+    }
+    else
+    {
+        DbgMsg(__FILE__, __LINE__, "pXMLDoc->get_childNodes() ERROR 0x%.8x\n", hr);
+    }    
+
+end:
+
+    if (!bOk)
+    {
+        // произошла ошибка
+        // освобождаем дескриптор докуммента
+        (*pXMLDoc)->Release();
+        *pXMLDoc = NULL;
+    }
+
+    return bOk;
+}
+//--------------------------------------------------------------------------------------
+/** 
+ * получение xml-узла из списка по его имени
+ * @param NodeName имя искомого узла
+ * @param pIDOMNodeList дескриптор списка
+ * @return дескриптор нужного узла, или NULL в случае неудачи
+ * @see ConfGetNodeByName() 
+ * @see ConfGetNodeText() 
+ * @see ConfGetTextByName()
+ */
+IXMLDOMNode * ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOMNodeList)
 {    
     IXMLDOMNode *Ret = NULL;
     LONG len = 0;
@@ -9,13 +84,6 @@ IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOM
     {
         return NULL;
     }
-
-    if (IsBadStringPtrW(NodeName, MAX_STRING_SIZE) ||
-        IsBadReadPtr(pIDOMNodeList, sizeof(PVOID)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
-        return NULL;
-    } 
 
     HRESULT hr = pIDOMNodeList->get_length(&len);
     if (SUCCEEDED(hr))
@@ -39,23 +107,7 @@ IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOM
 
                 if (ChildNodeName)
                 {
-                    typedef void (WINAPI * func_SysFreeString)(BSTR bstrString);
-
-                    func_SysFreeString f_SysFreeString = (func_SysFreeString)
-                        GetProcAddress(
-                        LoadLibrary("oleaut32.dll"),
-                        "SysFreeString"
-                    );
-                    if (f_SysFreeString)
-                    {
-                        f_SysFreeString(ChildNodeName);
-                    }
-                    else
-                    {
-#ifdef DBG
-                        DbgMsg(__FILE__, __LINE__, "GetProcAddress() ERROR %d\n", GetLastError());
-#endif
-                    }
+                    SysFreeString(ChildNodeName);                    
                 }
 
                 if (Ret)
@@ -68,36 +120,34 @@ IXMLDOMNode * WINAPI ConfGetListNodeByName(BSTR NodeName, IXMLDOMNodeList *pIDOM
             } 
             else 
             {
-#ifdef DBG
                 DbgMsg(__FILE__, __LINE__, "pIDOMNodeList->get_item() ERROR 0x%.8x\n", hr);
-#endif
             }
         }
     } 
     else 
     {
-#ifdef DBG
         DbgMsg(__FILE__, __LINE__, "pIDOMNodeList->get_length() ERROR 0x%.8x\n", hr);
-#endif
     }
 
     return NULL;
 }
 //--------------------------------------------------------------------------------------
-IXMLDOMNode * WINAPI ConfGetNodeByName(BSTR NodeName, IXMLDOMNode *pIDOMNode)
+/** 
+ * получение подузла по его имени
+ * @param NodeName имя искомого узла
+ * @param pIDOMNode дескриптор родительского узла
+ * @return дескриптор нужного узла, или NULL в случае неудачи
+ * @see ConfGetListNodeByName()  
+ * @see ConfGetNodeText() 
+ * @see ConfGetTextByName()
+ */
+IXMLDOMNode * ConfGetNodeByName(BSTR NodeName, IXMLDOMNode *pIDOMNode)
 {
     IXMLDOMNode *pIDOMRetNode = NULL;
     IXMLDOMNodeList *pIDOMNodeList = NULL;
 
     if (pIDOMNode == NULL)
     {
-        return NULL;
-    }
-
-    if (IsBadStringPtrW(NodeName, MAX_STRING_SIZE) ||
-        IsBadReadPtr(pIDOMNode, sizeof(PVOID)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
         return NULL;
     }
 
@@ -109,15 +159,22 @@ IXMLDOMNode * WINAPI ConfGetNodeByName(BSTR NodeName, IXMLDOMNode *pIDOMNode)
     } 
     else 
     {
-#ifdef DBG
         DbgMsg(__FILE__, __LINE__, "pIDOMNodeList->get_length() ERROR 0x%.8x\n", hr);
-#endif
     }
 
     return pIDOMRetNode;
 } 
 //--------------------------------------------------------------------------------------
-BOOL WINAPI ConfGetNodeTextW(IXMLDOMNode *pIDOMNode, PWSTR *str)
+/** 
+ * получение значения узла
+ * @param pIDOMNode дескриптор узла
+ * @param str адресс unicode-строки, в которую будет записано значение
+ * @return TRUE если всё ОК, FALSE в случае ошибки
+ * @see ConfGetListNodeByName() 
+ * @see ConfGetNodeByName() 
+ * @see ConfGetTextByName()
+ */
+BOOL ConfGetNodeTextW(IXMLDOMNode *pIDOMNode, PWSTR *str)
 {
     BOOL bRet = FALSE;
     BSTR val = NULL;
@@ -127,91 +184,59 @@ BOOL WINAPI ConfGetNodeTextW(IXMLDOMNode *pIDOMNode, PWSTR *str)
         return FALSE;
     }
 
-    if (IsBadReadPtr(pIDOMNode, sizeof(PVOID)) ||
-        IsBadWritePtr(str, sizeof(PWSTR)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
-        return FALSE;
-    }
-
     HRESULT hr = pIDOMNode->get_text(&val);
     if (FAILED(hr))
     {
-#ifdef DBG
         DbgMsg(__FILE__, __LINE__, "pIDOMNode->get_text() ERROR 0x%.8x\n", hr);
-#endif
         return FALSE;
     }
 
     DWORD Len = (wcslen((PWSTR)val) + 1) * sizeof(WCHAR);
     if (*str = (PWSTR)M_ALLOC(Len))
     {
-        memset(*str, 0, Len);
-        wcscpy(*str, (PWSTR)val);
+        ZeroMemory(*str, Len);
+        wcscpy_s(*str, Len / sizeof(wchar_t), (PWSTR)val);
         bRet = TRUE;
     }
     else
     {
-#ifdef DBG
         DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR %d\n", GetLastError());
-#endif
     }
 
     if (val)
     {
-        typedef void (WINAPI * func_SysFreeString)(BSTR bstrString);
-
-        func_SysFreeString f_SysFreeString = (func_SysFreeString)
-            GetProcAddress(
-            LoadLibrary("oleaut32.dll"),
-            "SysFreeString"
-        );
-        if (f_SysFreeString)
-        {
-            f_SysFreeString(val);
-        }
-        else
-        {
-#ifdef DBG
-            DbgMsg(__FILE__, __LINE__, "GetProcAddress() ERROR %d\n", GetLastError());
-#endif
-        }
+        SysFreeString(val);        
     }            
 
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-BOOL WINAPI ConfGetNodeTextA(IXMLDOMNode *pIDOMNode, PCHAR *str)
+/** 
+ * получение значения узла
+ * @param pIDOMNode дескриптор узла
+ * @param str адресс unicode-строки, в которую будет записано значение
+ * @return TRUE если всё ОК, FALSE в случае ошибки
+ * @see ConfGetListNodeByName() 
+ * @see ConfGetNodeByName() 
+ * @see ConfGetTextByName()
+ */
+BOOL ConfGetNodeTextA(IXMLDOMNode *pIDOMNode, PCHAR *str)
 {
     BOOL bRet = FALSE;
-    PWSTR str_w = NULL;
-
-    if (pIDOMNode == NULL)
-    {
-        return FALSE;
-    }
-
-    if (IsBadReadPtr(pIDOMNode, sizeof(PVOID)) ||
-        IsBadWritePtr(str, sizeof(PCHAR)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
-        return FALSE;
-    }
+    PWSTR str_w;
 
     if (ConfGetNodeTextW(pIDOMNode, &str_w))
     {
         int len = wcslen(str_w);
         if (*str = (PCHAR)M_ALLOC(len + 1))
         {
-            memset(*str, 0, len + 1);
+            ZeroMemory(*str, len + 1);
             WideCharToMultiByte(CP_ACP, 0, str_w, -1, *str, len, NULL, NULL);    
             bRet = TRUE;
         }
         else
         {
-#ifdef DBG
             DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR %d\n", GetLastError());
-#endif
         }
 
         M_FREE(str_w);
@@ -220,17 +245,21 @@ BOOL WINAPI ConfGetNodeTextA(IXMLDOMNode *pIDOMNode, PCHAR *str)
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-BOOL WINAPI ConfAllocGetTextByNameW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *value)
+/** 
+ * получение значения подузла по его имени
+ * @param pIDOMNode дескриптор родительского узла
+ * @param name имя дочернего узла, значение которого необходимо получить
+ * @param val адресс указателя на unicode-строку, в которую будет записано значение
+ * @return TRUE если всё ОК, FALSE в случае ошибки
+ * @see ConfGetListNodeByNameA() 
+ * @see ConfGetListNodeByName() 
+ * @see ConfGetNodeByName() 
+ * @see ConfGetNodeText() 
+ * @see ConfGetTextByName()
+ */
+BOOL ConfAllocGetTextByNameW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *value)
 {
     BOOL bRet = FALSE;
-
-    if (IsBadStringPtrW(name, MAX_STRING_SIZE) ||
-        IsBadReadPtr(pIDOMNode, sizeof(PVOID)) ||
-        IsBadWritePtr(value, sizeof(PWSTR)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
-        return FALSE;
-    }
     
     IXMLDOMNode *pIDOMChildNode = ConfGetNodeByName(name, pIDOMNode);
     if (pIDOMChildNode)
@@ -243,33 +272,107 @@ BOOL WINAPI ConfAllocGetTextByNameW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *v
     return bRet;
 }
 //--------------------------------------------------------------------------------------
-BOOL WINAPI ConfAllocGetTextByNameA(IXMLDOMNode *pIDOMNode, PWSTR name, PCHAR *value)
+/** 
+ * получение значения подузла по его имени
+ * @param pIDOMNode дескриптор родительского узла
+ * @param name имя дочернего узла, значение которого необходимо получить
+ * @param val адресс указателя на unicode-строку, в которую будет записано значение
+ * @return TRUE если всё ОК, FALSE в случае ошибки
+ * @see ConfGetListNodeByNameW() 
+ * @see ConfGetListNodeByName() 
+ * @see ConfGetNodeByName() 
+ * @see ConfGetNodeText() 
+ * @see ConfGetTextByName()
+ */
+BOOL ConfAllocGetTextByNameA(IXMLDOMNode *pIDOMNode, PWSTR name, PCHAR *value)
 {
     BOOL bRet = FALSE;
-    PWSTR value_w = NULL;
-
-    if (IsBadStringPtrW(name, MAX_STRING_SIZE) ||
-        IsBadReadPtr(pIDOMNode, sizeof(PVOID)) ||
-        IsBadWritePtr(value, sizeof(PCHAR)))
-    {
-        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: invalid parameter\n");
-        return FALSE;
-    }
+    PWSTR value_w;
 
     if (ConfAllocGetTextByNameW(pIDOMNode, name, &value_w))
     {
         int len = wcslen(value_w);
         if (*value = (PCHAR)M_ALLOC(len + 1))
         {
-            memset(*value, 0, len + 1);
+            ZeroMemory(*value, len + 1);
             WideCharToMultiByte(CP_ACP, 0, value_w, -1, *value, len, NULL, NULL);    
             bRet = TRUE;
         }
         else
         {
-#ifdef DBG
             DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR %d\n", GetLastError());
-#endif
+        }
+
+        M_FREE(value_w);
+    }
+
+    return bRet;
+}
+//--------------------------------------------------------------------------------------
+BOOL ConfGetNodeAttributeW(IXMLDOMNode *pIDOMNode, PWSTR name, PWSTR *value)
+{
+    BOOL bRet = FALSE;
+    IXMLDOMNamedNodeMap *pIXMLDOMNamedNodeMap = NULL;
+
+    // query attributes map
+    HRESULT hr = pIDOMNode->get_attributes(&pIXMLDOMNamedNodeMap);
+    if (SUCCEEDED(hr) && pIXMLDOMNamedNodeMap)
+    {
+        IXMLDOMNode *pIDOMAttrNode = NULL;
+
+        // query attribute node
+        hr = pIXMLDOMNamedNodeMap->getNamedItem(name, &pIDOMAttrNode);
+        if (SUCCEEDED(hr) && pIDOMAttrNode)
+        {
+            VARIANT varValue;
+            hr = pIDOMAttrNode->get_nodeValue(&varValue);
+            if (FAILED(hr))
+            {
+                DbgMsg(__FILE__, __LINE__, "pIDOMAttrNode->get_nodeValue() ERROR 0x%.8x\n", hr);
+                goto free;
+            }
+
+            BSTR val = _bstr_t(varValue);
+            DWORD Len = (wcslen((PWSTR)val) + 1) * sizeof(WCHAR);
+            if (*value = (PWSTR)M_ALLOC(Len))
+            {
+                ZeroMemory(*value, Len);
+                wcscpy(*value, (PWSTR)val);
+                bRet = TRUE;
+            }
+            else
+            {
+                DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR %d\n", GetLastError());
+            }
+free:
+            pIDOMAttrNode->Release();
+            pIDOMAttrNode = NULL;
+        }
+
+        pIXMLDOMNamedNodeMap->Release();
+        pIXMLDOMNamedNodeMap = NULL;
+    }
+
+    return bRet;
+}
+//--------------------------------------------------------------------------------------
+BOOL ConfGetNodeAttributeA(IXMLDOMNode *pIDOMNode, PWSTR name, PCHAR *value)
+{
+    BOOL bRet = FALSE;
+    PWSTR value_w;
+
+    if (ConfGetNodeAttributeW(pIDOMNode, name, &value_w))
+    {
+        int len = wcslen(value_w);
+        if (*value = (PCHAR)M_ALLOC(len + 1))
+        {
+            ZeroMemory(*value, len + 1);
+            WideCharToMultiByte(CP_ACP, 0, value_w, -1, *value, len, NULL, NULL);    
+            bRet = TRUE;
+        }
+        else
+        {
+            DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR %d\n", GetLastError());
         }
 
         M_FREE(value_w);

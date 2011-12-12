@@ -1,24 +1,53 @@
 #include "stdafx.h"
 
+#define DBGMSG_BUFF_SIZE 0x1000
+
 HANDLE hDbgPipe = NULL, hDbgLogFile = NULL;
 KMUTEX DbgMutex;
+//--------------------------------------------------------------------------------------
+char *GetNameFromFullPath(char *lpszPath)
+{
+    char *lpszName = lpszPath;
+
+    for (size_t i = 0; i < strlen(lpszPath); i++)
+    {
+        if (lpszPath[i] == '\\' || lpszPath[i] == '/')
+        {
+            lpszName = lpszPath + i + 1;
+        }
+    }
+
+    return lpszName;
+}
 //--------------------------------------------------------------------------------------
 #ifdef DBGMSG_FULL
 //--------------------------------------------------------------------------------------
 void DbgMsg(char *lpszFile, int Line, char *lpszMsg, ...)
 {
-    char szBuff[0x100], szOutBuff[0x100];
     va_list mylist;
 
+    char *lpszBuff = (char *)M_ALLOC(DBGMSG_BUFF_SIZE);
+    if (lpszBuff == NULL)
+    {
+        return;
+    }
+
+    char *lpszOutBuff = (char *)M_ALLOC(DBGMSG_BUFF_SIZE);
+    if (lpszOutBuff == NULL)
+    {
+        M_FREE(lpszBuff);
+        return;
+    }
+
     va_start(mylist, lpszMsg);
-    vsprintf(szBuff, lpszMsg, mylist);	
+    vsprintf(lpszBuff, lpszMsg, mylist);	
     va_end(mylist);
 
-    sprintf(szOutBuff, "%s(%d) : %s", lpszFile, Line, szBuff);	
+    sprintf(lpszOutBuff, "%s(%d) : %s", GetNameFromFullPath(lpszFile), Line, lpszBuff);	
 
 #ifdef DBGMSG
 
-    DbgPrint(szOutBuff);
+    DbgPrint(lpszOutBuff);
 
 #endif
 
@@ -32,25 +61,28 @@ void DbgMsg(char *lpszFile, int Line, char *lpszMsg, ...)
         {
             // write debug message into pipe
             IO_STATUS_BLOCK IoStatusBlock;
-            ULONG Len = (ULONG)strlen(szOutBuff) + 1;
+            ULONG Len = (ULONG)strlen(lpszOutBuff) + 1;
 
             ZwWriteFile(hDbgPipe, 0, NULL, NULL, &IoStatusBlock, (PVOID)&Len, sizeof(Len), NULL, NULL);
-            ZwWriteFile(hDbgPipe, 0, NULL, NULL, &IoStatusBlock, szOutBuff, Len, NULL, NULL);
+            ZwWriteFile(hDbgPipe, 0, NULL, NULL, &IoStatusBlock, lpszOutBuff, Len, NULL, NULL);
         }
 
         if (hDbgLogFile)
         {
             // write debug message into logfile
             IO_STATUS_BLOCK IoStatusBlock;
-            ULONG Len = (ULONG)strlen(szOutBuff);
+            ULONG Len = (ULONG)strlen(lpszOutBuff);
 
-            ZwWriteFile(hDbgLogFile, 0, NULL, NULL, &IoStatusBlock, szOutBuff, Len, NULL, NULL);
+            ZwWriteFile(hDbgLogFile, 0, NULL, NULL, &IoStatusBlock, lpszOutBuff, Len, NULL, NULL);
         }
 
         KeReleaseMutex(&DbgMutex, FALSE);
     } 
 
 #endif // DBGPIPE/DBGLOGFILE
+
+    M_FREE(lpszBuff);
+    M_FREE(lpszOutBuff);
 }
 //--------------------------------------------------------------------------------------
 #ifdef DBGPIPE
@@ -174,5 +206,69 @@ void DbgInit(void)
 }
 //--------------------------------------------------------------------------------------
 #endif // DBGMSG_FULL
+//--------------------------------------------------------------------------------------
+void DbgHexdump(PUCHAR Data, ULONG Length)
+{
+    ULONG dp = 0, p = 0;
+    const char trans[] =
+        "................................ !\"#$%&'()*+,-./0123456789"
+        ":;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklm"
+        "nopqrstuvwxyz{|}~...................................."
+        "....................................................."
+        "........................................";
+
+    char szBuff[0x100], szChar[10];
+    RtlZeroMemory(szBuff, sizeof(szBuff));
+
+    for (dp = 1; dp <= Length; dp++)  
+    {
+        sprintf(szChar, "%02x ", Data[dp-1]);
+        strcat(szBuff, szChar);
+
+        if ((dp % 8) == 0)
+        {
+            strcat(szBuff, " ");
+        }
+
+        if ((dp % 16) == 0) 
+        {
+            strcat(szBuff, "| ");
+            p = dp;
+
+            for (dp -= 16; dp < p; dp++)
+            {
+                sprintf(szChar, "%c", trans[Data[dp]]);
+                strcat(szBuff, szChar);
+            }
+
+            DbgMsg(__FILE__, __LINE__, "%.8x: %s\r\n", dp - 16, szBuff);
+            RtlZeroMemory(szBuff, sizeof(szBuff));
+        }
+    }
+
+    if ((Length % 16) != 0) 
+    {
+        p = dp = 16 - (Length % 16);
+
+        for (dp = p; dp > 0; dp--) 
+        {
+            strcat(szBuff, "   ");
+
+            if (((dp % 8) == 0) && (p != 8))
+            {
+                strcat(szBuff, " ");
+            }
+        }
+
+        strcat(szBuff, " | ");
+        for (dp = (Length - (16 - p)); dp < Length; dp++)
+        {
+            sprintf(szChar, "%c", trans[Data[dp]]);
+            strcat(szBuff, szChar);
+        }
+
+        DbgMsg(__FILE__, __LINE__, "%.8x: %s\r\n", Length - (Length % 16), szBuff);
+    }
+}
 //--------------------------------------------------------------------------------------
 // EoF

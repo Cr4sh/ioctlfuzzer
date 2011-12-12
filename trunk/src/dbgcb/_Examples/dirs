@@ -1,0 +1,3 @@
+DIRS = \
+     dbgcb_drv \ 
+     dbgcb_app 

@@ -1,0 +1,10 @@
+
+#ifdef _X86_
+
+DRIVER BINRES "..\\driver_i386.sys"
+
+#elif _AMD64_
+
+DRIVER BINRES "..\\driver_amd64.sys"
+
+#endif

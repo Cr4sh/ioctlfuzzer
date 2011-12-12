@@ -6,6 +6,9 @@
 #define M_ALLOC(_size_) ExAllocatePool(NonPagedPool, (_size_))
 #define M_FREE(_addr_) ExFreePool((_addr_))
 
+#define XLOWORD(_dw) ((USHORT)(((ULONG)(_dw)) & 0xffff))
+#define XHIWORD(_dw) ((USHORT)((((ULONG)(_dw)) >> 16) & 0xffff))
+
 #define ABSOLUTE(wait) (wait)
 #define RELATIVE(wait) (-(wait))
 
@@ -28,11 +31,15 @@
 #define IFMT64_W L"0x%.16I64x"
 
 #ifdef _X86_
+
 #define IFMT IFMT32
 #define IFMT_W IFMT32_W
+
 #elif _AMD64_
+
 #define IFMT IFMT64
 #define IFMT_W IFMT64_W
+
 #endif
 
 BOOLEAN SetObjectSecurityWorld(HANDLE hObject, ACCESS_MASK AccessMask);

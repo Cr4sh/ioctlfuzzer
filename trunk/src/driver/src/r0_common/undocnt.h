@@ -187,6 +187,8 @@ typedef struct _SYSTEM_HANDLE_INFORMATION
 } SYSTEM_HANDLE_INFORMATION, 
 *PSYSTEM_HANDLE_INFORMATION;
 
+#ifndef _NTIFS_INCLUDED_
+
 typedef struct _FILE_DIRECTORY_INFORMATION
 {
     ULONG NextEntryOffset;
@@ -203,6 +205,18 @@ typedef struct _FILE_DIRECTORY_INFORMATION
 
 } FILE_DIRECTORY_INFORMATION, 
 *PFILE_DIRECTORY_INFORMATION;
+
+typedef struct _FILE_NAMES_INFORMATION
+{
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+
+} FILE_NAMES_INFORMATION, 
+*PFILE_NAMES_INFORMATION;
+
+#endif
 
 typedef struct _FILE_FULL_DIRECTORY_INFORMATION
 {
@@ -241,16 +255,6 @@ typedef struct _FILE_BOTH_DIRECTORY_INFORMATION
 
 } FILE_BOTH_DIRECTORY_INFORMATION, 
 *PFILE_BOTH_DIRECTORY_INFORMATION; 
-
-typedef struct _FILE_NAMES_INFORMATION
-{
-    ULONG NextEntryOffset;
-    ULONG FileIndex;
-    ULONG FileNameLength;
-    WCHAR FileName[1];
-
-} FILE_NAMES_INFORMATION, 
-*PFILE_NAMES_INFORMATION;
 
 typedef struct _FILE_ID_BOTH_DIRECTORY_INFORMATION 
 {
@@ -413,28 +417,6 @@ ZwQueryInformationProcess(
     PULONG ReturnLength
 );
 
-NTSYSAPI
-NTSTATUS
-NTAPI
-ZwAllocateVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID *BaseAddress,
-    ULONG ZeroBits,
-    PULONG AllocationSize,
-    ULONG AllocationType,
-    ULONG Protect
-);
-
-NTSYSAPI
-NTSTATUS
-NTAPI
-ZwFreeVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID *BaseAddress,
-    PULONG FreeSize,
-    ULONG FreeType
-);
-
 NTSYSAPI 
 NTSTATUS 
 NTAPI 
@@ -540,7 +522,7 @@ RtlGetDaclSecurityDescriptor(
     PBOOLEAN  DaclDefaulted
 );
 
-#ifndef __wtypes_h__
+#ifndef _NTIFS_INCLUDED_
 
 typedef struct _SID_IDENTIFIER_AUTHORITY
 {
@@ -603,6 +585,8 @@ RtlValidSid(
     PSID Sid
 ); 
 
+#ifndef _NTIFS_INCLUDED_
+
 typedef struct _KAPC_STATE 
 {
     LIST_ENTRY ApcListHead[2];
@@ -613,6 +597,8 @@ typedef struct _KAPC_STATE
 
 } KAPC_STATE, 
 *PKAPC_STATE;
+
+#endif
 
 NTSYSAPI
 VOID

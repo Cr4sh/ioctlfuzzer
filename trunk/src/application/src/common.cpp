@@ -104,4 +104,150 @@ close:
     return bRet;
 }
 //--------------------------------------------------------------------------------------
+char *GetNameFromFullPath(char *lpszPath)
+{
+    char *lpszName = lpszPath;
+
+    for (size_t i = 0; i < strlen(lpszPath); i++)
+    {
+        if (lpszPath[i] == '\\' || lpszPath[i] == '/')
+        {
+            lpszName = lpszPath + i + 1;
+        }
+    }
+
+    return lpszName;
+}
+//--------------------------------------------------------------------------------------
+wchar_t *GetNameFromFullPathW(wchar_t *lpwcPath)
+{
+    wchar_t *lpwcName = lpwcPath;
+
+    for (size_t i = 0; i < wcslen(lpwcPath); i++)
+    {
+        if (lpwcPath[i] == L'\\' || lpwcPath[i] == L'/')
+        {
+            lpwcName = lpwcPath + i + 1;
+        }
+    }
+
+    return lpwcName;
+}
+//--------------------------------------------------------------------------------------
+BOOL IsFileExists(char *lpszFileName)
+{
+    BOOL bRet = FALSE;
+    WIN32_FIND_DATA FindData;
+
+    // enumerate files
+    HANDLE hDir = FindFirstFile(lpszFileName, &FindData);
+    if (hDir != INVALID_HANDLE_VALUE)
+    {
+        bRet = TRUE;
+        FindClose(hDir);
+    }
+
+    return bRet;
+}
+//--------------------------------------------------------------------------------------
+PVOID GetSysInf(SYSTEM_INFORMATION_CLASS InfoClass)
+{
+    NTSTATUS ns = 0;
+    ULONG RetSize = 0, Size = 0x100;
+    PVOID Info = NULL;
+
+    GET_NATIVE(NtQuerySystemInformation);
+
+    while (true) 
+    {    
+        // allocate memory for system information
+        if ((Info = M_ALLOC(Size)) == NULL) 
+        {
+            DbgMsg(__FILE__, __LINE__, "M_ALLOC() fails\n");
+            return NULL;
+        }
+
+        // query information
+        RetSize = 0;
+        ns = f_NtQuerySystemInformation(InfoClass, Info, Size, &RetSize);
+        if (ns == STATUS_INFO_LENGTH_MISMATCH)
+        {       
+            // buffer is too small
+            M_FREE(Info);
+            Info = NULL;
+
+            if (RetSize > 0)
+            {
+                // allocate more memory and try again
+                Size = RetSize + 0x100;
+            }            
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (!NT_SUCCESS(ns))
+    {
+        DbgMsg(__FILE__, __LINE__, "NtQuerySystemInformation() fails; status: 0x%.8x\n", ns);
+
+        if (Info)
+        {
+            M_FREE(Info);
+        }
+
+        return NULL;
+    }
+
+    return Info;
+}
+//--------------------------------------------------------------------------------------
+BOOL GetProcessNameById(DWORD dwProcessId, char *lpszName, size_t NameLen)
+{
+    BOOL bRet = FALSE;
+
+    // enumerate processes
+    HANDLE hSnapProcs = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapProcs != INVALID_HANDLE_VALUE)
+    {
+        PROCESSENTRY32 Process = { 0 };
+        Process.dwSize = sizeof(PROCESSENTRY32);
+
+        if (Process32First(hSnapProcs, &Process))
+        {
+            do 
+            {                
+                // match process id
+                if (Process.th32ProcessID == dwProcessId)
+                {
+                    strlwr(Process.szExeFile);
+                    lstrcpy(lpszName, Process.szExeFile);
+
+                    bRet = TRUE;
+
+                    break;
+                }
+            }
+            while (Process32Next(hSnapProcs, &Process));
+        }
+        else
+        {
+            DbgMsg(__FILE__, __LINE__, "Process32First() ERROR %d\n", GetLastError());
+        }
+
+        CloseHandle(hSnapProcs);
+    }
+    else
+    {
+        DbgMsg(__FILE__, __LINE__, "CreateToolhelp32Snapshot() ERROR %d\n", GetLastError());
+    }
+
+    return bRet;
+}
+//--------------------------------------------------------------------------------------
 // EoF

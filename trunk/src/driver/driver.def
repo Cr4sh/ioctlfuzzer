@@ -1,0 +1,9 @@
+EXPORTS
+m_bEnableDbgcb
+currentDeviceObject
+currentDriverObject
+currentIoControlCode
+currentInputBuffer
+currentInputBufferLength
+currentOutputBuffer
+currentOutputBufferLength

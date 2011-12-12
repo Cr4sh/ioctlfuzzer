@@ -4,7 +4,7 @@ ALL: $(OUTNAME).exe
 
 CC = cl.exe
 
-CFLAGS = /nologo -I".\src" -I"$(SDK_INC_PATH)" -I"$(CRT_INC_PATH)" -DDBG -D_X86_=1 /Gz /c
+CFLAGS = /nologo -I".\src" -I"$(DDK_INC_PATH)" -I"$(SDK_INC_PATH)" -I"$(CRT_INC_PATH)" -I"$(SDK_INC_PATH)\crt\stl60" -D_X86_=1 /Gz /EHsc /c
 
 include makefile.inc
 
@@ -16,7 +16,7 @@ RC = rc.exe
 
 $(OUTNAME).exe: $(LOBJS)
     $(RC) -I"$(MFC_INC_PATH)" -D_X86_ -DDBG ioctlfuzzer.rc
-    $(LN) $(LFLAGS) $(LOBJS) $(LLIBS) ../dbgsdk/lib/i386/dbghelp.lib ioctlfuzzer.RES
+    $(LN) $(LFLAGS) $(LOBJS) $(LLIBS) lib\comsupp.lib ..\dbgsdk\lib\i386\dbghelp.lib ioctlfuzzer.RES
     
 clean:
     @del *.obj 

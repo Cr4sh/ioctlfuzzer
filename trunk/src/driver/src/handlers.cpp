@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#define CHECK_PREV_MODE
-
 NT_DEVICE_IO_CONTROL_FILE old_NtDeviceIoControlFile = NULL;
 
 /**
@@ -9,9 +7,22 @@ NT_DEVICE_IO_CONTROL_FILE old_NtDeviceIoControlFile = NULL;
  */
 ULONG m_FuzzOptions = 0;
 FUZZING_TYPE m_FuzzingType = FuzzingType_Random;
+BOOLEAN m_bEnableDbgcb = FALSE;
 
 /**
- * Handle and objetc pointer of the fizzer's process (uses for fair fuzzing mode)
+ * Exported variables for acessing to the 
+ * last IOCTL request information from the kernel debugger.
+ */
+PDEVICE_OBJECT currentDeviceObject = NULL;
+PDRIVER_OBJECT currentDriverObject = NULL;
+ULONG currentIoControlCode = 0;
+PVOID currentInputBuffer = NULL;
+ULONG currentInputBufferLength = 0;
+PVOID currentOutputBuffer = NULL;
+ULONG currentOutputBufferLength = 0;
+
+/**
+ * Handle and objetc pointer of the fuzzer's process (uses for fair fuzzing mode)
  */
 HANDLE m_FuzzThreadId = 0;
 PEPROCESS m_FuzzProcess = NULL;
@@ -22,8 +33,21 @@ PUSER_MODE_DATA m_UserModeData = NULL;
 */
 #define RANDOM_FUZZING_ITERATIONS   10
 #define BUFFERED_FUZZING_ITERATIONS 5
-#define DWORD_FUZZING_MAX_LENGTH    0x100
+#define DWORD_FUZZING_MAX_LENGTH    0x200
 #define DWORD_FUZZING_DELTA         4
+
+#ifdef _X86_
+
+// pointer values for invalid kernel and user buffers
+#define KERNEL_BUFFER_ADDRESS (PVOID)(0xFFFF0000)
+#define USER_BUFFER_ADDRESS   (PVOID)(0x00001000)
+
+#elif _AMD64_
+
+#define KERNEL_BUFFER_ADDRESS (PVOID)(0xFFFFFFFFFFFF0000)
+#define USER_BUFFER_ADDRESS   (PVOID)(0x0000000000001000)
+
+#endif
 
 // constants for dword fuzzing
 ULONG m_DwordFuzzingConstants[] =
@@ -297,7 +321,7 @@ void FuzzContinue_NtDeviceIoControlFile(
             {
                 ULONG TmpInputLength = InputBufferLength;
 
-                if (m_FuzzOptions & FUZZ_OPT_FUZZSIZE)
+                if (m_FuzzOptions & FUZZ_OPT_FUZZ_SIZE)
                 {
                     TmpInputLength = getrand(1, TmpInputLength * 4);
                 }
@@ -335,7 +359,7 @@ void FuzzContinue_NtDeviceIoControlFile(
             ULONG FuzzingLength = XALIGN_DOWN(InputBufferLength, sizeof(ULONG));
             if (FuzzingLength <= DWORD_FUZZING_MAX_LENGTH && FuzzingLength >= sizeof(ULONG))
             {
-                // fuze each dword in input buffer
+                // fuzz each dword value in input buffer
                 for (ULONG i = 0; i < FuzzingLength; i += DWORD_FUZZING_DELTA)
                 {
                     for (ULONG i_v = 0; i_v < sizeof(m_DwordFuzzingConstants) / sizeof(ULONG); i_v++)
@@ -377,15 +401,55 @@ void FuzzContinue_NtDeviceIoControlFile(
         DbgMsg(__FILE__, __LINE__, "M_ALLOC() ERROR\n");
     }
 
+    // try to fuzz missing output buffer length checks
+    if (OutputBufferLength > 0)
+    {        
+        // ... with user-mode buffer addresses
+        PVOID TmpOutputBuffer = USER_BUFFER_ADDRESS;
+
+        // set previous mode to UserMode
+        SetPreviousMode(PrevMode);
+
+        // send fuzzed request
+        NTSTATUS status = old_NtDeviceIoControlFile(
+            FileHandle, 
+            Event, ApcRoutine, 
+            ApcContext, 
+            IoStatusBlock, 
+            IoControlCode, 
+            InputBuffer, 
+            InputBufferLength, 
+            TmpOutputBuffer, 0
+        );        
+
+        // ... with kernel-mode buffer addresses
+        TmpOutputBuffer = KERNEL_BUFFER_ADDRESS;
+
+        // set previous mode to UserMode
+        SetPreviousMode(PrevMode);
+
+        // send fuzzed request
+        status = old_NtDeviceIoControlFile(
+            FileHandle, 
+            Event, ApcRoutine, 
+            ApcContext, 
+            IoStatusBlock, 
+            IoControlCode, 
+            InputBuffer, 
+            InputBufferLength, 
+            TmpOutputBuffer, 0
+        );
+    }
+
     ULONG Method = IoControlCode & 3;
     if (Method != METHOD_BUFFERED)
     {
-        // try to fuze addresses, if the method is not buffered
+        // try to fuzz buffer addresses, if method is not buffered
         for (int i = 0; i < BUFFERED_FUZZING_ITERATIONS; i++)
         {
             // ... with user-mode addresses
-            PVOID TmpInputBuffer  = (PVOID)((PUCHAR)MM_HIGHEST_USER_ADDRESS - 0x1000);
-            PVOID TmpOutputBuffer = (PVOID)((PUCHAR)MM_HIGHEST_USER_ADDRESS - 0x1000);
+            PVOID TmpInputBuffer  = USER_BUFFER_ADDRESS;
+            PVOID TmpOutputBuffer = USER_BUFFER_ADDRESS;
             ULONG TmpInputBufferLength  = getrand(0, 0x100);
             ULONG TmpOutputBufferLength = getrand(0, 0x100);
 
@@ -409,8 +473,8 @@ void FuzzContinue_NtDeviceIoControlFile(
         for (int i = 0; i < BUFFERED_FUZZING_ITERATIONS; i++)
         {
             // ... with kernel-mode addresses
-            PVOID TmpInputBuffer  = (PVOID)((PUCHAR)MM_HIGHEST_USER_ADDRESS + 0xC000);
-            PVOID TmpOutputBuffer = (PVOID)((PUCHAR)MM_HIGHEST_USER_ADDRESS + 0xC000);
+            PVOID TmpInputBuffer  = KERNEL_BUFFER_ADDRESS;
+            PVOID TmpOutputBuffer = KERNEL_BUFFER_ADDRESS;
             ULONG TmpInputBufferLength  = getrand(0, 0x100);
             ULONG TmpOutputBufferLength = getrand(0, 0x100);
 
@@ -517,7 +581,7 @@ void Fuzz_NtDeviceIoControlFile(
     ThreadParams.cInputBufferLength = InputBufferLength;
     ThreadParams.cOutputBufferLength = OutputBufferLength;    
 
-    if (m_FuzzOptions & FUZZ_OPT_FAIRFUZZ)
+    if (m_FuzzOptions & FUZZ_OPT_FUZZ_FAIR)
     {
         /**
          * Sending IOCTL's from context of the fuzzer process.
@@ -728,8 +792,9 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
     ULONG OutputBufferLength)
 {    
     KPROCESSOR_MODE PrevMode = ExGetPreviousMode();
+    BOOLEAN bLogOutputBuffer = FALSE;
 
-#ifdef CHECK_PREV_MODE    
+#ifdef USE_CHECK_PREV_MODE    
 
     // handle only user mode calls
     if (PrevMode != KernelMode)
@@ -737,7 +802,7 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
 #endif // CHECK_PREV_MODE
 
     {
-        POBJECT_NAME_INFORMATION ObjectName = NULL;    
+        POBJECT_NAME_INFORMATION DeviceObjectName = NULL, DriverObjectName = NULL;    
         PFILE_OBJECT pFileObject = NULL;
 
         // get device object by handle
@@ -750,19 +815,19 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
         );
         if (NT_SUCCESS(ns))
         {
-            PVOID pObject = NULL;
+            PVOID pDeviceObject = NULL;
 
             // validate pointer to device object
             if (MmIsAddressValid(pFileObject->DeviceObject))
             {
-                pObject = pFileObject->DeviceObject;
+                pDeviceObject = pFileObject->DeviceObject;
             }
             else
             {
                 goto end;
             }
 
-            if (pObject == m_DeviceObject)
+            if (pDeviceObject == m_DeviceObject)
             {
                 // don't handle requests to our driver
                 goto end;
@@ -791,38 +856,35 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
             }
 
             // get device name by poinet
-            if (ObjectName = GetObjectName(pObject))
+            if (DeviceObjectName = GetObjectName(pDeviceObject))
             {            
-                PEPROCESS Process = PsGetCurrentProcess();
-                HANDLE ProcessId = PsGetCurrentProcessId();
-
-                LARGE_INTEGER Timeout;
-                Timeout.QuadPart = RELATIVE(SECONDS(5));
-
-                ns = KeWaitForMutexObject(&m_CommonMutex, Executive, KernelMode, FALSE, &Timeout);               
-                if (ns == STATUS_TIMEOUT)
+                if (DriverObjectName = GetObjectName(pFileObject->DeviceObject->DriverObject))
                 {
-                    DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): Wait timeout\n");
-                    ExFreePool(ObjectName);
-                    goto end;
-                }
+                    PEPROCESS Process = PsGetCurrentProcess();
+                    HANDLE ProcessId = PsGetCurrentProcessId();
 
-                __try
-                {
-                    // get process image path
-                    PUNICODE_STRING ImagePath = LookupProcessName(NULL);                
-                    if (ImagePath)
-                    {                                            
-                        BOOLEAN bProcessEvent = FltIsMatchedRequest(
-                            &ObjectName->Name,
-                            &pModuleEntry->FullDllName,
-                            IoControlCode,
-                            ImagePath
-                        );                       
+                    LARGE_INTEGER Timeout;
+                    Timeout.QuadPart = RELATIVE(SECONDS(5));
 
-                        if (bProcessEvent &&
-                            (m_FuzzOptions & FUZZ_OPT_LOG_IOCTLS))
-                        {    
+                    ns = KeWaitForMutexObject(&m_CommonMutex, Executive, KernelMode, FALSE, &Timeout);
+                    if (ns == STATUS_TIMEOUT)
+                    {
+                        DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): Wait timeout\n");
+                        ExFreePool(DeviceObjectName);
+                        goto end;
+                    }
+
+                    BOOLEAN bProcessEvent = FALSE;
+
+                    __try
+                    {
+                        // get process image path
+                        PUNICODE_STRING ProcessImagePath = LookupProcessName(NULL);                
+                        if (ProcessImagePath)
+                        {                                                                              
+                            LARGE_INTEGER Time;
+                            KeQuerySystemTime(&Time);
+
                             PWSTR Methods[] = 
                             {
                                 L"METHOD_BUFFERED",
@@ -834,67 +896,143 @@ NTSTATUS NTAPI new_NtDeviceIoControlFile(
                             // get text name of the method
                             PWSTR lpwcMethod = Methods[IoControlCode & 3];
 
-                            // log common information about this IOCTL
-                            LogData(
-                                "'%wZ' (PID: %d)\r\n"
-                                "'%wZ' ("IFMT") [%wZ]\r\n"
-                                "IOCTL Code: 0x%.8x,  Method: %ws\r\n",
-                                ImagePath, ProcessId, &ObjectName->Name, pObject, 
-                                &pModuleEntry->FullDllName, IoControlCode, lpwcMethod
-                            );
+                            currentDeviceObject = pFileObject->DeviceObject;
+                            currentDriverObject = pFileObject->DeviceObject->DriverObject;
+                            currentIoControlCode = IoControlCode;
+                            currentInputBuffer = InputBuffer;
+                            currentInputBufferLength = InputBufferLength;
+                            currentOutputBuffer = OutputBuffer;
+                            currentOutputBufferLength = OutputBufferLength;
 
-                            if (m_FuzzOptions & FUZZ_OPT_HEXDUMP)
+                            if (m_FuzzOptions & FUZZ_OPT_LOG_IOCTL_GLOBAL)
                             {
-                                LogData("\r\n");
+                                // log IOCTL information into the global log
+                                LogDataIoctls("timestamp=0x%.8x%.8x\r\n", Time.HighPart, Time.LowPart);
+                                LogDataIoctls("process_id=%d\r\n", ProcessId);
+                                LogDataIoctls("process_path=%wZ\r\n", ProcessImagePath);
+                                LogDataIoctls("device=%wZ\r\n", &DeviceObjectName->Name);
+                                LogDataIoctls("driver=%wZ\r\n", &DriverObjectName->Name);
+                                LogDataIoctls("image_file=%wZ\r\n", &pModuleEntry->FullDllName);
+                                LogDataIoctls("code=0x%.8x\r\n", IoControlCode);
+                                LogDataIoctls("method=%ws\r\n", lpwcMethod);
+                                LogDataIoctls("in_size=%d\r\n", InputBufferLength);
+                                LogDataIoctls("out_size=%d\r\n", OutputBufferLength);
+                                LogDataIoctls("\r\n");
                             }
 
-                            // log input buffer information
-                            LogData("    InBuff: "IFMT",  InSize: 0x%.8x\r\n", InputBuffer, InputBufferLength);
-
-                            if ((m_FuzzOptions & FUZZ_OPT_HEXDUMP) && InputBufferLength > 0)
-                            {
-                                // print input buffer contents
-                                LogData("--------------------------------------------------------------------\r\n");
-                                Hexdump((PUCHAR)InputBuffer, InputBufferLength);
-                            }
-
-                            // log output buffer information
-                            LogData("   OutBuff: "IFMT", OutSize: 0x%.8x\r\n", OutputBuffer, OutputBufferLength);
-
-                            if ((m_FuzzOptions & FUZZ_OPT_HEXDUMP) && OutputBufferLength > 0)
-                            {
-                                // print output buffer contents
-                                LogData("--------------------------------------------------------------------\r\n");
-                                Hexdump((PUCHAR)OutputBuffer, OutputBufferLength);
-                            }
-
-                            LogData("\r\n");
-                        }    
-
-                        if (InputBuffer != NULL && InputBufferLength > 0 &&
-                            (m_FuzzOptions & FUZZ_OPT_FUZZ) && bProcessEvent)
-                        {   
-                            // fuze this request
-                            Fuzz_NtDeviceIoControlFile(
-                                PrevMode,
-                                &ObjectName->Name,
-                                FileHandle,    
-                                IoStatusBlock,
+                            // get debugger command, that can be associated with this IOCTL
+                            char *lpszKdCommand = FltGetKdCommand(
+                                &DeviceObjectName->Name,
+                                &pModuleEntry->FullDllName,
                                 IoControlCode,
-                                InputBuffer,
-                                InputBufferLength,
-                                OutputBuffer,
-                                OutputBufferLength
+                                ProcessImagePath
                             );
+
+                            bProcessEvent = FltIsMatchedRequest(
+                                &DeviceObjectName->Name,
+                                &pModuleEntry->FullDllName,
+                                IoControlCode,
+                                ProcessImagePath
+                            );
+
+                            if ((bProcessEvent || (lpszKdCommand && m_bEnableDbgcb)) &&
+                                (m_FuzzOptions & FUZZ_OPT_LOG_IOCTL))
+                            {
+                                bLogOutputBuffer = TRUE;
+
+                                // log common information about this IOCTL
+                                LogData(
+                                    "'%wZ' (PID: %d)\r\n"
+                                    "'%wZ' ("IFMT") [%wZ]\r\n"
+                                    "IOCTL Code: 0x%.8x,  Method: %ws\r\n",
+                                    ProcessImagePath, ProcessId, &DeviceObjectName->Name, pDeviceObject, 
+                                    &pModuleEntry->FullDllName, IoControlCode, lpwcMethod
+                                );
+
+                                if (m_FuzzOptions & FUZZ_OPT_LOG_IOCTL_BUFFERS)
+                                {
+                                    LogData("\r\n");
+                                }
+
+                                // log output buffer information
+                                LogData("   OutBuff: "IFMT", OutSize: 0x%.8x\r\n", OutputBuffer, OutputBufferLength);
+
+                                // log input buffer information
+                                LogData("    InBuff: "IFMT",  InSize: 0x%.8x\r\n", InputBuffer, InputBufferLength);
+
+                                if ((m_FuzzOptions & FUZZ_OPT_LOG_IOCTL_BUFFERS) && 
+                                    InputBufferLength > 0 && InputBufferLength)
+                                {
+                                    // print input buffer contents
+                                    LogData("--------------------------------------------------------------------\r\n");
+                                    LogDataHexdump((PUCHAR)InputBuffer, min(InputBufferLength, MAX_IOCTL_BUFFER_LEGTH));
+                                }                                
+
+                                LogData("\r\n");
+
+                                if (lpszKdCommand && m_bEnableDbgcb)
+                                {
+                                    DbgPrint(
+                                        "<?dml?>" __FUNCTION__ "(): <exec cmd=\"eb " DRIVER_SERVICE_NAME "!m_bEnableDbgcb 0\">"
+                                        "Disable kernel debugger interaction</exec>\n"
+                                    );
+
+                                    if (strlen(lpszKdCommand) > 0)
+                                    {
+                                        // execute specified debugger command
+                                        DbgPrint(
+                                            "<?dml?>" __FUNCTION__ "(): Command=<exec cmd=\"%s\">%s</exec>\n",
+                                            lpszKdCommand, lpszKdCommand
+                                        );
+
+                                        dbg_exec(lpszKdCommand);
+                                    }
+                                    else
+                                    {
+                                        // empty command, break into the kernel debugger
+                                        DbgMsg(__FILE__, __LINE__, __FUNCTION__"(): Breaking into the kernel debugger...\n");
+                                        DbgBreakPoint();
+                                    }
+
+                                    DbgPrint("\r\n");
+                                }
+                            }    
+
+                            currentDeviceObject = NULL;
+                            currentDriverObject = NULL;
+                            currentIoControlCode = 0;
+                            currentInputBuffer = NULL;
+                            currentInputBufferLength = 0;
+                            currentOutputBuffer = NULL;
+                            currentOutputBufferLength = 0;
                         }
                     }
-                }
-                __finally
-                {
-                    KeReleaseMutex(&m_CommonMutex, FALSE);
-                }
+                    __finally
+                    {
+                        KeReleaseMutex(&m_CommonMutex, FALSE);
+                    }
+
+                    if (InputBuffer != NULL && InputBufferLength > 0 &&
+                        (m_FuzzOptions & FUZZ_OPT_FUZZ) && bProcessEvent)
+                    {   
+                        // fuzz this request
+                        Fuzz_NtDeviceIoControlFile(
+                            PrevMode,
+                            &DeviceObjectName->Name,
+                            FileHandle,    
+                            IoStatusBlock,
+                            IoControlCode,
+                            InputBuffer,
+                            InputBufferLength,
+                            OutputBuffer,
+                            OutputBufferLength
+                        );
+                    }
+
+                    ExFreePool(DriverObjectName);
+                }                
                 
-                ExFreePool(ObjectName);
+                ExFreePool(DeviceObjectName);
             }
 end:
             ObDereferenceObject(pFileObject);
@@ -909,7 +1047,7 @@ end:
     }
 
     // call original function
-    NTSTATUS ns = old_NtDeviceIoControlFile(
+    NTSTATUS status = old_NtDeviceIoControlFile(
         FileHandle, 
         Event, 
         ApcRoutine, 
@@ -922,7 +1060,7 @@ end:
         OutputBufferLength
     );    
 
-    return ns;
+    return status;
 }
 //--------------------------------------------------------------------------------------
 // EoF

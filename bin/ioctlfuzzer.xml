@@ -10,7 +10,7 @@
   <fuzzing_type>dwords</fuzzing_type>
 
   <!-- Path to log file. --> 
-  <log_file>C:\ioctls.txt</log_file> 
+  <log_file>C:\ioctlfuzzer.log</log_file> 
 
   <!--  If true, hex dumps of IOCTL buffers will be logged. --> 
   <hex_dump>false</hex_dump> 
@@ -22,16 +22,15 @@
   <debug_log_requests>true</debug_log_requests> 
 
   <!-- If true, will fuzz IOCTLs (false - only logging). -->
-  <fuze_requests>true</fuze_requests> 
+  <fuzz_requests>true</fuzz_requests> 
 
   <!-- If true, will also randomly modify fuzzed IRP's input buffer size. -->
-  <fuze_size>true</fuze_size> 
+  <fuzz_size>true</fuzz_size> 
 
   <!-- If true - malformed IOCTLs will sending in context of ioctlfuzzer.exe process. -->
   <fair_fuzzing>false</fair_fuzzing>
 
-  <!-- 
-
+  <!--
       IOCTLs "allow" list.
    
       The fuzzer will process (i.e. log and/or fuzz) any IOCTL request 
@@ -41,43 +40,32 @@
   --> 
 
   <allow>
-    <!-- IOCTL request destination driver name. --> 
-    <drivers>
-    </drivers>
-    
-    <!-- IOCTL request destination device name. -->
-    <devices>
-    </devices>
-    
-    <!-- IOCTL request Control Code. --> 
-    <ioctls>
-    </ioctls>
-    
-    <!-- IOCTL request sender process file path/name. -->
-    <processes>
-    </processes>
   </allow>
 
   <!-- 
-      IOCTLs "deny" list.
-      Can be empty.
+      IOCTLs "deny" list, can be empty.
+      Identical in structure to "allow" list.
   --> 
-  <deny>
-    <!-- 
-        "deny" list is identical in structure to "allow" list.
-    --> 
-
+  <deny> 
     <!-- Don't fuzz default Windows drivers. --> 
-    <drivers>
-      <entry>tcpip.sys</entry>
-      <entry>afd.sys</entry>
-      <entry>NDIS.sys</entry>
-      <entry>fltMgr.sys</entry>
-      <entry>ipsec.sys</entry>
-      <entry>mrxsmb.sys</entry>
-      <entry>KsecDD.sys</entry>
-      <entry>netbios.sys</entry>
-      <entry>nsiproxy.sys</entry>
-    </drivers>
+    <driver val="tcpip.sys" />
+    <driver val="afd.sys" />
+    <driver val="NDIS.sys" />
+    <driver val="fltMgr.sys" />
+    <driver val="ipsec.sys" />
+    <driver val="mrxsmb.sys" />
+    <driver val="KsecDD.sys" />
+    <driver val="netbios.sys" />
+    <driver val="nsiproxy.sys" />
   </deny>
+  
+  <!--
+      Kernel Debugger Communication Engine configuration:
+      list of IOCTLs (by driver/device/process name or I/O Control Code)
+      and remote kernel debugger commands, that must be executed
+      when IOCTL Fuzzer cacthing these requests.
+      See README.TXT for more information.
+  -->
+  <dbgcb>
+  </dbgcb>
 </cfg>

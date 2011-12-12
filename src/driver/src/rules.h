@@ -16,6 +16,9 @@ typedef struct _IOCTL_FILTER
 
     struct _IOCTL_FILTER *next, *prev;
 
+    BOOLEAN bDbgcbAction;
+    char szKdCommand[1];
+
 } IOCTL_FILTER,
 *PIOCTL_FILTER;
 
@@ -29,10 +32,17 @@ typedef struct _IOCTL_FILTER_SERIALIZED
 } IOCTL_FILTER_SERIALIZED,
 *PIOCTL_FILTER_SERIALIZED;
 
-BOOLEAN FltAdd(PIOCTL_FILTER f, PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end);
+PIOCTL_FILTER FltAdd(PIOCTL_FILTER f, PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, ULONG KdCommandLength);
 void FltFlushList(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end);
 
 BOOLEAN FltIsMatchedRequest(
+    PUNICODE_STRING fDeviceName, 
+    PUNICODE_STRING fDriverName,
+    ULONG IoControlCode,
+    PUNICODE_STRING fProcessName
+);
+
+char *FltGetKdCommand(
     PUNICODE_STRING fDeviceName, 
     PUNICODE_STRING fDriverName,
     ULONG IoControlCode,
@@ -45,10 +55,13 @@ BOOLEAN LoadRules(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, HANDLE hKey, PUNI
 /**
 * Macro defines for allow/deny lists of IOCTL filtering
 */
-#define FltAllowAdd(_entry_) FltAdd((_entry_), &f_allow_head, &f_allow_end)
+#define FltAllowAdd(_entry_, _len_) FltAdd((_entry_), &f_allow_head, &f_allow_end, (_len_))
 #define FltAllowFlushList() FltFlushList(&f_allow_head, &f_allow_end)
 #define FltAllowMatch(_drv_, _dev_, _c_, _p_) FltMatch(&f_allow_head, (_drv_), (_dev_), (_c_), (_p_))
 
-#define FltDenyAdd(_entry_) FltAdd((_entry_), &f_deny_head, &f_deny_end)
+#define FltDenyAdd(_entry_, _len_) FltAdd((_entry_), &f_deny_head, &f_deny_end, (_len_))
 #define FltDenyFlushList() FltFlushList(&f_deny_head, &f_deny_end)
 #define FltDenyMatch(_drv_, _dev_, _c_, _p_) FltMatch(&f_deny_head, (_drv_), (_dev_), (_c_), (_p_))
+
+#define FltDbgcbAdd(_entry_, _len_) FltAdd((_entry_), &f_dbgcb_head, &f_dbgcb_end, (_len_))
+#define FltDbgcbFlushList() FltFlushList(&f_dbgcb_head, &f_dbgcb_end)

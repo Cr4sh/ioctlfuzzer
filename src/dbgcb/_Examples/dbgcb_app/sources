@@ -1,0 +1,22 @@
+
+!if "$(_BUILDARCH)"=="AMD64"
+TARGETNAME = ..\..\..\dbgcb_app_x64
+!else
+TARGETNAME = ..\..\..\dbgcb_app
+!endif
+
+TARGETTYPE = PROGRAM
+
+TARGETLIBS = \
+        $(SDK_LIB_PATH)\kernel32.lib \
+        $(SDK_LIB_PATH)\user32.lib
+
+UMTYPE = console
+
+USE_MSVCRT = 1
+
+SOURCES = \
+        dbgcb_stub.cpp \
+        dbgcb_app.cpp
+
+_NT_TARGET_VERSION = $(_NT_TARGET_VERSION_WINXP)

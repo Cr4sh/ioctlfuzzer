@@ -6,6 +6,7 @@ extern KMUTEX m_CommonMutex;
 
 PIOCTL_FILTER f_allow_head = NULL, f_allow_end = NULL;
 PIOCTL_FILTER f_deny_head = NULL, f_deny_end = NULL;
+PIOCTL_FILTER f_dbgcb_head = NULL, f_dbgcb_end = NULL;
 //--------------------------------------------------------------------------------------
 wchar_t xchrlower_w(wchar_t chr)
 {
@@ -41,43 +42,34 @@ BOOLEAN EqualUnicodeString_r(PUNICODE_STRING Str1, PUNICODE_STRING Str2, BOOLEAN
     return TRUE;
 }
 //--------------------------------------------------------------------------------------
-BOOLEAN FltAdd(PIOCTL_FILTER f, PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end)
+PIOCTL_FILTER FltAdd(PIOCTL_FILTER f, PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, ULONG KdCommandLength)
 {
-    BOOLEAN bRet = FALSE;
-
-    KeWaitForMutexObject(&m_CommonMutex, Executive, KernelMode, FALSE, NULL); 
-
-    __try
+    ULONG Length = sizeof(IOCTL_FILTER) + KdCommandLength;
+    PIOCTL_FILTER f_entry = (PIOCTL_FILTER)ExAllocatePool(NonPagedPool, Length);
+    if (f_entry)
     {
-        PIOCTL_FILTER f_entry = (PIOCTL_FILTER)ExAllocatePool(NonPagedPool, sizeof(IOCTL_FILTER));
-        if (f_entry)
-        {
-            RtlCopyMemory(f_entry, f, sizeof(IOCTL_FILTER));
+        RtlZeroMemory(f_entry, Length);
+        RtlCopyMemory(f_entry, f, sizeof(IOCTL_FILTER));
 
-            if (*f_end)
-            {
-                (*f_end)->next = f_entry;
-                f_entry->prev = *f_end;
-                (*f_end) = f_entry;
-            } 
-            else 
-            {
-                *f_end = *f_head = f_entry;    
-            }
-
-            bRet = TRUE;        
-        }
-        else
+        if (*f_end)
         {
-            DbgMsg(__FILE__, __LINE__, "ExAllocatePool() fails\n");
+            (*f_end)->next = f_entry;
+            f_entry->prev = *f_end;
+            (*f_end) = f_entry;
+        } 
+        else 
+        {
+            *f_end = *f_head = f_entry;    
         }
-    }    
-    __finally
+
+        return f_entry;        
+    }
+    else
     {
-        KeReleaseMutex(&m_CommonMutex, FALSE);
-    }    
+        DbgMsg(__FILE__, __LINE__, "ExAllocatePool() fails\n");
+    }
 
-    return bRet;
+    return NULL;
 }
 //--------------------------------------------------------------------------------------
 void FltFlushList(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end)
@@ -88,7 +80,8 @@ void FltFlushList(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end)
         PIOCTL_FILTER f_tmp = f_entry->next;
 
         if (f_entry->Type == FLT_DEVICE_NAME ||
-            f_entry->Type == FLT_DRIVER_NAME)
+            f_entry->Type == FLT_DRIVER_NAME ||
+            f_entry->Type == FLT_PROCESS_PATH)
         {
             RtlFreeUnicodeString(&f_entry->usName);
         }
@@ -102,10 +95,10 @@ void FltFlushList(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end)
 }
 //--------------------------------------------------------------------------------------
 PIOCTL_FILTER FltMatch(
-    PIOCTL_FILTER   *f_head,
+    PIOCTL_FILTER *f_head,
     PUNICODE_STRING fDeviceName, 
     PUNICODE_STRING fDriverName,
-    ULONG           IoControlCode,
+    ULONG IoControlCode,
     PUNICODE_STRING fProcessName)
 {
     PIOCTL_FILTER ret = NULL;
@@ -115,6 +108,12 @@ PIOCTL_FILTER FltMatch(
 
     while (f_entry)
     {
+        if (f_entry->bDbgcbAction)
+        {
+            // skip entries with debugger commands
+            goto next;
+        }
+
         if (f_entry->Type == FLT_DEVICE_NAME)
         {
             if (EqualUnicodeString_r(&f_entry->usName, fDeviceName, TRUE))
@@ -148,10 +147,70 @@ PIOCTL_FILTER FltMatch(
             }
         }
 
+next:
         f_entry = f_entry->next;
     }
 
     return ret;
+}
+//--------------------------------------------------------------------------------------
+char *FltGetKdCommand(
+    PUNICODE_STRING fDeviceName, 
+    PUNICODE_STRING fDriverName,
+    ULONG IoControlCode,
+    PUNICODE_STRING fProcessName)
+{
+    char *lpszCmd = NULL;
+
+    // match parameters by filter list
+    PIOCTL_FILTER f_entry = f_dbgcb_head;
+
+    while (f_entry)
+    {
+        if (!f_entry->bDbgcbAction)
+        {
+            // skip entries with debugger commands
+            goto next;
+        }
+
+        if (f_entry->Type == FLT_DEVICE_NAME)
+        {
+            if (EqualUnicodeString_r(&f_entry->usName, fDeviceName, TRUE))
+            {
+                lpszCmd = f_entry->szKdCommand;
+                break;
+            }
+        }
+        else if (f_entry->Type == FLT_DRIVER_NAME)
+        {
+            if (EqualUnicodeString_r(&f_entry->usName, fDriverName, TRUE))
+            {
+                lpszCmd = f_entry->szKdCommand;
+                break;
+            }
+        }
+        else if (f_entry->Type == FLT_IOCTL_CODE)
+        {
+            if (f_entry->IoctlCode == IoControlCode)
+            {
+                lpszCmd = f_entry->szKdCommand;
+                break;
+            }
+        }
+        else if (f_entry->Type == FLT_PROCESS_PATH)
+        {
+            if (EqualUnicodeString_r(&f_entry->usName, fProcessName, TRUE))
+            {
+                lpszCmd = f_entry->szKdCommand;
+                break;
+            }
+        }
+
+next:
+        f_entry = f_entry->next;
+    }
+
+    return lpszCmd;
 }
 //--------------------------------------------------------------------------------------
 BOOLEAN FltIsMatchedRequest(
@@ -180,17 +239,20 @@ BOOLEAN SaveRules(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, HANDLE hKey, PUNI
     PIOCTL_FILTER f = *f_head;
     while (f)
     {
-        BuffSize += sizeof(IOCTL_FILTER_SERIALIZED);
-
-        if (f->Type == FLT_DEVICE_NAME ||
-            f->Type == FLT_DRIVER_NAME ||
-            f->Type == FLT_PROCESS_PATH)
+        if (!f->bDbgcbAction)
         {
-            // we an have object name
-            BuffSize += f->usName.Length;
-        }
+            BuffSize += sizeof(IOCTL_FILTER_SERIALIZED);
 
-        RulesToSerialize++;
+            if (f->Type == FLT_DEVICE_NAME ||
+                f->Type == FLT_DRIVER_NAME ||
+                f->Type == FLT_PROCESS_PATH)
+            {
+                // we an have object name
+                BuffSize += f->usName.Length;
+            }
+
+            RulesToSerialize++;
+        }        
         
         f = f->next;
     }
@@ -208,23 +270,27 @@ BOOLEAN SaveRules(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, HANDLE hKey, PUNI
             f = *f_head;
             while (f)
             {
-                ULONG NextEntryOffset = sizeof(IOCTL_FILTER_SERIALIZED);
-
-                f_s->Type = f->Type;
-                f_s->IoctlCode = f->IoctlCode;
-
-                if (f->Type == FLT_DEVICE_NAME ||
-                    f->Type == FLT_DRIVER_NAME ||
-                    f->Type == FLT_PROCESS_PATH)
+                if (!f->bDbgcbAction)
                 {
-                    // we have an object name
-                    f_s->NameLen = f->usName.Length;
-                    NextEntryOffset += f_s->NameLen;
-                    memcpy(&f_s->Name, f->usName.Buffer, f_s->NameLen);
+                    ULONG NextEntryOffset = sizeof(IOCTL_FILTER_SERIALIZED);
+
+                    f_s->Type = f->Type;
+                    f_s->IoctlCode = f->IoctlCode;
+
+                    if (f->Type == FLT_DEVICE_NAME ||
+                        f->Type == FLT_DRIVER_NAME ||
+                        f->Type == FLT_PROCESS_PATH)
+                    {
+                        // we have an object name
+                        f_s->NameLen = f->usName.Length;
+                        NextEntryOffset += f_s->NameLen;
+                        memcpy(&f_s->Name, f->usName.Buffer, f_s->NameLen);
+                    }
+
+                    // go to the next serialized entry
+                    f_s = (PIOCTL_FILTER_SERIALIZED)((PUCHAR)f_s + NextEntryOffset);
                 }
 
-                // go to the next serialized entry
-                f_s = (PIOCTL_FILTER_SERIALIZED)((PUCHAR)f_s + NextEntryOffset);              
                 f = f->next;                    
             }
             
@@ -321,7 +387,7 @@ BOOLEAN LoadRules(PIOCTL_FILTER *f_head, PIOCTL_FILTER *f_end, HANDLE hKey, PUNI
                             }
                         }
 
-                        if (!FltAdd(&Flt, f_head, f_end))
+                        if (!FltAdd(&Flt, f_head, f_end, 0))
                         {
                             if (Flt.usName.Buffer)
                             {

@@ -11,19 +11,23 @@
 #define C_ADD_DRIVER        0x02
 #define C_ADD_IOCTL         0x03
 #define C_ADD_PROCESS       0x04
-#define C_SET_LOG_PIPE      0x05
-#define C_SET_OPTIONS       0x06
-#define C_SET_LOG_FILE      0x07
+#define C_SET_OPTIONS       0x05
+#define C_GET_DEVICE_INFO   0x06
+#define C_CHECK_HOOKS       0x07
+#define C_DEL_OPTIONS       0x08
+#define C_GET_OBJECT_NAME   0x09
 
 // fuzzing options
-#define FUZZ_OPT_HEXDUMP    0x00000001
-#define FUZZ_OPT_LOG        0x00000002
-#define FUZZ_OPT_DEBUGLOG   0x00000004
-#define FUZZ_OPT_FUZZ       0x00000008
-#define FUZZ_OPT_FUZZSIZE   0x00000010
-#define FUZZ_OPT_FAIRFUZZ   0x00000020
-#define FUZZ_OPT_BOOTFUZZ   0x00000040
-#define FUZZ_OPT_LOG_IOCTLS 0x00000080
+#define FUZZ_OPT_LOG_IOCTL          0x00000001
+#define FUZZ_OPT_LOG_IOCTL_BUFFERS  0x00000002
+#define FUZZ_OPT_LOG_IOCTL_GLOBAL   0x00000004
+#define FUZZ_OPT_LOG_EXCEPTIONS     0x00000008
+#define FUZZ_OPT_LOG_DEBUG          0x00000010
+#define FUZZ_OPT_FUZZ               0x00000020
+#define FUZZ_OPT_FUZZ_SIZE          0x00000040
+#define FUZZ_OPT_FUZZ_FAIR          0x00000080
+#define FUZZ_OPT_FUZZ_BOOT          0x00000100
+#define FUZZ_OPT_NO_SDT_HOOKS       0x00000200
 
 typedef ULONG FUZZING_TYPE;
 
@@ -40,6 +44,8 @@ typedef struct _USER_MODE_DATA
 *PUSER_MODE_DATA;
 #pragma pack(pop)
 
+#define MAX_REQUEST_STRING 0x100
+
 #pragma pack(push, 1)
 typedef struct _REQUEST_BUFFER
 {
@@ -49,26 +55,61 @@ typedef struct _REQUEST_BUFFER
     // operation code (see C_* definitions)
     ULONG Code;
 
-    struct
+    union
     {
-        ULONG Options;
-        ULONG FuzzThreadId;
-        FUZZING_TYPE FuzzingType;
-        PUSER_MODE_DATA UserModeData;
-        ULONG KiDispatchException_Offset;
+        struct
+        {
+            ULONG Options;
+            ULONG FuzzThreadId;
+            FUZZING_TYPE FuzzingType;
+            PUSER_MODE_DATA UserModeData;
+            ULONG KiDispatchException_Offset;
 
-    } Options;
+        } Options;
 
-    // for C_ADD_IOCTL
-    ULONG IoctlCode;
+        struct
+        {
+            PVOID DeviceObjectAddr;
+            PVOID DriverObjectAddr;
+            char szDriverObjectName[MAX_REQUEST_STRING];
+            char szDriverFilePath[MAX_REQUEST_STRING];
 
-    // for C_SET_LOG_PIPE
-    HANDLE hPipe;
+        } DeviceInfo;
 
-    // for all C_ADD_*
-    BOOLEAN bAllow;
+        struct
+        {
+            // for C_ADD_IOCTL
+            ULONG IoctlCode;
 
-    // for C_ADD_DEVICE,  C_ADD_DRIVER and C_ADD_PROCESS
+            // for all C_ADD_*
+            BOOLEAN bAllow;
+
+            // for C_ADD_DEVICE,  C_ADD_DRIVER and C_ADD_PROCESS
+            char szObjectName[MAX_REQUEST_STRING];
+
+            /* 
+                If TRUE -- debugger command, that stored in Buff[], 
+                must be executed for every IOCTL, that has been matched
+                by this object.
+            */
+            BOOLEAN bDbgcbAction;
+
+        } AddObject;
+
+        struct
+        {
+            HANDLE hObject;
+            char szObjectName[MAX_REQUEST_STRING];
+
+        } ObjectName;
+
+        struct
+        {
+            BOOLEAN bHooksInstalled;
+
+        } CheckHooks;
+    };        
+    
     char Buff[];
 
 } REQUEST_BUFFER,

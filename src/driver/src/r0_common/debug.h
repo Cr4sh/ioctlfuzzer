@@ -20,3 +20,5 @@ void DbgClosePipe(void);
 #ifdef DBGLOGFILE
 void DbgOpenLogFile(void);
 #endif
+
+void DbgHexdump(PUCHAR Data, ULONG Length);

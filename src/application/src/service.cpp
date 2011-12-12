@@ -45,7 +45,7 @@ BOOL DrvDeviceRequest(PREQUEST_BUFFER Request, DWORD dwRequestSize)
 
     if (hDevice == NULL)
     {
-        DbgMsg(__FILE__, __LINE__, "RkDeviceRequest() Invalid Device Handle!\n"); 
+        DbgMsg(__FILE__, __LINE__, __FUNCTION__ "() ERROR: Invalid device handle\n"); 
         return FALSE;
     }
 
@@ -65,12 +65,15 @@ BOOL DrvDeviceRequest(PREQUEST_BUFFER Request, DWORD dwRequestSize)
             dwRequestSize, 
             &dwBytes, NULL))
         {     
+
+#ifdef DBG_IO
+            
             DbgMsg(
                 __FILE__, __LINE__, 
-                "RkDeviceRequest() %d bytes returned; status 0x%.8x\n", 
+                __FUNCTION__ "() %d bytes returned; status 0x%.8x\n", 
                 dwBytes, Response->Status
             );
-
+#endif
             memcpy(Request, Response, dwRequestSize);
 
             bRet = TRUE;

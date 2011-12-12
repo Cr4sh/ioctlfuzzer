@@ -28,7 +28,10 @@ rules.obj: src/rules.cpp
     
 excpthook.obj: src/excpthook.cpp
     $(CC) $(CFLAGS) src/excpthook.cpp
+    
+dbgcb_client.obj: ../dbgcb/common/dbgcb_client.cpp
+    $(CC) $(CFLAGS) -DDBGCB_DRIVER ../dbgcb/common/dbgcb_client.cpp
 
 LLIBS = ntoskrnl.lib hal.lib
 
-LOBJS = driver.obj debug.obj common.obj lst.obj rng.obj common_asm.obj handlers.obj hook.obj log.obj rules.obj excpthook.obj
+LOBJS = driver.obj debug.obj common.obj lst.obj rng.obj common_asm.obj handlers.obj hook.obj log.obj rules.obj excpthook.obj dbgcb_client.obj
